@@ -2,16 +2,15 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Генератор конфига для sing-box из VLESS/ShadowSocks</title>
+  <title>Генератор конфига для sing-box</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
   <div class="container mt-5">
     <div class="card shadow">
       <div class="card-body">
-        <h3 class="card-title mb-4">Генератор конфига для sing-box из VLESS/ShadowSocks</h3>
+        <h3 class="card-title mb-4">Генератор конфига для sing-box</h3>
 
         <div class="mb-3">
           <label for="router" class="form-label">Адрес роутера:</label>
@@ -20,13 +19,15 @@
 
         <div class="mb-3">
           <label for="links" class="form-label">Вставьте ссылки:</label>
-          <textarea id="links" class="form-control" rows="8" placeholder="ss:// или vless:// ссылки, одна на строку"></textarea>
+          <textarea id="links" class="form-control" rows="8" placeholder="ss://, vless://, vmess:// и др. ссылки, одна на строку"></textarea>
         </div>
 
         <div class="d-flex gap-2 mb-4">
           <button class="btn btn-primary" onclick="generateConfig()">Сгенерировать config.json</button>
           <a id="downloadBtn" class="btn btn-success d-none" download="config.json">⬇ Скачать config.json</a>
         </div>
+
+        <div id="warnings" class="text-danger mb-3"></div>
 
         <div id="resultWrapper" class="d-none">
           <h5>Результат:</h5>
@@ -49,9 +50,13 @@
         }
         const [method, password] = decoded.split(':');
         const [server, port = "8388"] = serverPart.split(':');
+
+        // Определяем тег
+        const tag = decodeURIComponent(url.hash.slice(1)) || (url.search.includes("outline=1") ? "Outline" : "ShadowSocks");
+
         return {
           type: "shadowsocks",
-          tag: decodeURIComponent(url.hash.slice(1)) || "ShadowSocks",
+          tag,
           server,
           server_port: parseInt(port),
           method,
@@ -68,9 +73,6 @@
         const [uuid, serverPort] = url.href.replace("vless://", "").split('@');
         const [server, port] = serverPort.split(':');
         const params = new URLSearchParams(url.search);
-        const sni = params.get("sni") || server;
-        const fp = params.get("fp") || "chrome";
-        const path = params.get("path") || "/";
         return {
           type: "vless",
           tag: decodeURIComponent(url.hash.slice(1)) || "VLESS",
@@ -80,13 +82,81 @@
           packet_encoding: "xudp",
           tls: {
             enabled: true,
-            server_name: sni,
+            server_name: params.get("sni") || server,
             insecure: false,
-            utls: { enabled: true, fingerprint: fp }
+            utls: { enabled: true, fingerprint: params.get("fp") || "chrome" }
           },
           transport: {
             type: "ws",
-            path
+            path: params.get("path") || "/"
+          }
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function parseVMess(line) {
+      try {
+        const raw = line.replace("vmess://", "");
+        const json = JSON.parse(atob(raw));
+        return {
+          type: "vmess",
+          tag: json.ps || "VMess",
+          server: json.add,
+          server_port: parseInt(json.port),
+          uuid: json.id,
+          security: json.security || "auto",
+          tls: json.tls === "tls",
+          transport: {
+            type: json.net || "tcp",
+            path: json.path || "/"
+          }
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function parseTrojan(line) {
+      try {
+        const url = new URL(line);
+        const [password, hostPort] = url.href.replace("trojan://", "").split('@');
+        const [server, port] = hostPort.split(':');
+        return {
+          type: "trojan",
+          tag: decodeURIComponent(url.hash.slice(1)) || "Trojan",
+          server,
+          server_port: parseInt(port),
+          password,
+          tls: {
+            enabled: true,
+            server_name: url.searchParams.get("sni") || server,
+            insecure: false
+          }
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    function parseTUIC(line) {
+      try {
+        const url = new URL(line);
+        const tag = decodeURIComponent(url.hash.slice(1)) || "TUIC";
+        const [uuid, password] = url.username.split(':');
+        return {
+          type: "tuic",
+          tag,
+          server: url.hostname,
+          server_port: parseInt(url.port),
+          uuid,
+          password,
+          alpn: ["h3"],
+          tls: {
+            enabled: true,
+            server_name: url.hostname,
+            insecure: false
           }
         };
       } catch {
@@ -100,27 +170,36 @@
 
       const outbounds = [];
       const tags = [];
-      let hasVLESS = false;
+      const invalidLinks = [];
 
       for (const line of rawLinks) {
         const cleanLine = line.trim();
         if (!cleanLine) continue;
 
-        let outbound;
-        if (cleanLine.startsWith("ss://")) {
-          outbound = parseSS(cleanLine);
-        } else if (cleanLine.startsWith("vless://")) {
-          outbound = parseVLESS(cleanLine);
-          if (outbound) {
-            tags.push(outbound.tag);
-            hasVLESS = true;
-          }
+        let outbound = null;
+
+        if (cleanLine.startsWith("ssconf://")) {
+          invalidLinks.push(`${cleanLine} (Outline 2.0 — не поддерживается)`);
+          continue;
         }
 
-        if (outbound) outbounds.push(outbound);
+        if (cleanLine.startsWith("ss://")) outbound = parseSS(cleanLine);
+        else if (cleanLine.startsWith("vless://")) outbound = parseVLESS(cleanLine);
+        else if (cleanLine.startsWith("vmess://")) outbound = parseVMess(cleanLine);
+        else if (cleanLine.startsWith("trojan://")) outbound = parseTrojan(cleanLine);
+        else if (cleanLine.startsWith("tuic://")) outbound = parseTUIC(cleanLine);
+
+        if (outbound) {
+          outbounds.push(outbound);
+          if (["vless", "vmess", "trojan", "tuic"].includes(outbound.type)) {
+            tags.push(outbound.tag);
+          }
+        } else {
+          invalidLinks.push(cleanLine);
+        }
       }
 
-      if (hasVLESS && tags.length > 0) {
+      if (tags.length > 0) {
         outbounds.unshift({
           type: "selector",
           tag: "select",
@@ -157,12 +236,11 @@
             listen_port: 1080
           }
         ],
-        outbounds: outbounds,
+        outbounds,
         route: { auto_detect_interface: false }
       };
 
       const jsonStr = JSON.stringify(config, null, 2);
-
       document.getElementById("result").textContent = jsonStr;
       document.getElementById("resultWrapper").classList.remove("d-none");
 
@@ -170,6 +248,13 @@
       const link = document.getElementById("downloadBtn");
       link.href = URL.createObjectURL(blob);
       link.classList.remove("d-none");
+
+      const warningBox = document.getElementById("warnings");
+      if (invalidLinks.length > 0) {
+        warningBox.innerHTML = "Некорректные или неподдерживаемые ссылки:<br>" + invalidLinks.map(x => `– ${x}`).join("<br>");
+      } else {
+        warningBox.textContent = "";
+      }
     }
   </script>
 </body>
