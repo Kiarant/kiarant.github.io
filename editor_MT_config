@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактор групп доменов</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-dark p-4">
+  <div class="container">
+    <h1 class="mb-4">Редактор групп доменов</h1>
+
+    <div class="mb-3">
+      <input type="file" id="fileInput" accept=".mtrickle" class="form-control">
+    </div>
+    <div class="mb-3">
+      <button id="addGroupBtn" class="btn btn-primary">Добавить группу</button>
+      <button id="toggleThemeBtn" class="btn btn-secondary">Сменить тему</button>
+    </div>
+
+    <div id="groupsContainer"></div>
+
+    <div class="mt-4">
+      <button id="saveBtn" class="btn btn-success">Сохранить файл</button>
+    </div>
+  </div>
+
+  <script>
+    let jsonData = null;
+    const fileInput = document.getElementById('fileInput');
+    const groupsContainer = document.getElementById('groupsContainer');
+    const addGroupBtn = document.getElementById('addGroupBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const toggleThemeBtn = document.getElementById('toggleThemeBtn');
+
+    function generateId() {
+      return Math.floor(Math.random() * Math.pow(2, 32)).toString(16).padStart(8, '0');
+    }
+
+    function updateDataFromDOM() {
+      const groupDivs = groupsContainer.getElementsByClassName('group');
+      Array.from(groupDivs).forEach(groupDiv => {
+        const groupId = groupDiv.dataset.groupId;
+        const name = groupDiv.querySelector('.group-name').value;
+        const iface = groupDiv.querySelector('.group-interface').value;
+        const rulesText = groupDiv.querySelector('.group-rules').value;
+        const typeSelect = groupDiv.querySelector('.rule-type');
+        const ruleType = typeSelect ? typeSelect.value : 'namespace';
+        const domains = rulesText.split('\n').map(line => line.trim()).filter(line => line);
+        const group = jsonData.groups.find(g => g.id === groupId);
+        if (group) {
+          group.name = name;
+          group.interface = iface;
+          const newRules = [];
+          domains.forEach(domain => {
+            let existing = (group.rules || []).find(rule => rule.rule === domain);
+            if (!existing) {
+              existing = {
+                id: generateId(),
+                name: "",
+                rule: domain,
+                enable: true
+              };
+            }
+            existing.type = ruleType;
+            newRules.push(existing);
+          });
+          group.rules = newRules;
+        }
+      });
+    }
+
+    fileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          jsonData = JSON.parse(e.target.result);
+          if (!jsonData.groups) jsonData.groups = [];
+          renderGroups();
+        } catch {
+          alert('Ошибка при чтении JSON файла');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function renderGroups() {
+      groupsContainer.innerHTML = '';
+      jsonData.groups.forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'group border rounded p-3 mb-4 bg-white';
+        groupDiv.dataset.groupId = group.id;
+
+        const header = document.createElement('div');
+        header.className = 'd-flex flex-wrap gap-2 mb-2';
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'form-control group-name';
+        nameInput.placeholder = 'Название группы';
+        nameInput.value = group.name || '';
+        header.appendChild(nameInput);
+
+        const ifaceInput = document.createElement('input');
+        ifaceInput.type = 'text';
+        ifaceInput.className = 'form-control group-interface';
+        ifaceInput.placeholder = 'Интерфейс';
+        ifaceInput.value = group.interface || '';
+        header.appendChild(ifaceInput);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger';
+        deleteBtn.textContent = 'Удалить';
+        deleteBtn.onclick = () => {
+          if (confirm('Удалить группу?')) {
+            updateDataFromDOM();
+            jsonData.groups = jsonData.groups.filter(g => g.id !== group.id);
+            renderGroups();
+          }
+        };
+        header.appendChild(deleteBtn);
+
+        groupDiv.appendChild(header);
+
+        const typeRow = document.createElement('div');
+        typeRow.className = 'mb-2';
+        const typeLabel = document.createElement('label');
+        typeLabel.textContent = 'Тип правил:';
+        typeLabel.className = 'form-label';
+        typeRow.appendChild(typeLabel);
+        const select = document.createElement('select');
+        select.className = 'form-select rule-type';
+        ['namespace', 'wildcard', 'domain', 'regex'].forEach(type => {
+          const option = document.createElement('option');
+          option.value = type;
+          option.textContent = type;
+          select.appendChild(option);
+        });
+        typeRow.appendChild(select);
+        groupDiv.appendChild(typeRow);
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'form-control group-rules';
+        textarea.rows = 5;
+        textarea.value = (group.rules || []).map(r => r.rule).join('\n');
+        groupDiv.appendChild(textarea);
+
+        groupsContainer.appendChild(groupDiv);
+      });
+    }
+
+    addGroupBtn.addEventListener('click', () => {
+      if (!jsonData) jsonData = { groups: [] };
+      updateDataFromDOM();
+      jsonData.groups.push({ id: generateId(), name: '', color: '#ffffff', interface: 'nwg0', enable: true, rules: [] });
+      renderGroups();
+    });
+
+    saveBtn.addEventListener('click', () => {
+      if (!jsonData) return alert('Нет данных для сохранения');
+      updateDataFromDOM();
+      const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'updated_groups.mtrickle';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    toggleThemeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('bg-dark');
+      document.body.classList.toggle('text-light');
+    });
+  </script>
+</body>
+</html>
