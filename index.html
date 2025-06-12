@@ -83,6 +83,29 @@
         li {
             margin-bottom: 8px;
         }
+            .donate-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            display: inline-block;
+            text-align: center;
+        }
+        .donate-btn:hover {
+            background: linear-gradient(45deg, #e65c5c, #e67e22);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        .footer-links {
+            text-align: center;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -256,5 +279,10 @@ opkg install "название пакета"</pre>
     <p>Можете создавать разные группы с разными интерфейсами. Дальше ваша фантазия.</p>
     <p>Описание типов правил:</p>
     <img src="media/image41.png" alt="Типы правил MagiTrickle">
+    <div class="footer-links">
+    <a href="https://yoomoney.ru/to/4100118816814288" target="_blank">
+        <button class="donate-btn">Донат</button>
+    </a>
+    </div>
 </body>
 </html>
