@@ -22,9 +22,15 @@
           <textarea id="links" class="form-control" rows="8" placeholder="ss://, vless://, vmess:// и др. ссылки, одна на строку"></textarea>
         </div>
 
+        <div class="mb-3 form-check">
+          <input type="checkbox" id="includeClashApi" class="form-check-input" checked>
+          <label for="includeClashApi" class="form-check-label">Включить clash_api (для веб-интерфейса)</label>
+        </div>
+
         <div class="d-flex gap-2 mb-4">
           <button class="btn btn-primary" onclick="generateConfig()">Сгенерировать config.json</button>
           <a id="downloadBtn" class="btn btn-success d-none" download="config.json">⬇ Скачать config.json</a>
+          <button id="copyBtn" class="btn btn-secondary d-none" onclick="copyConfig()">Скопировать</button>
         </div>
 
         <div id="warnings" class="text-danger mb-3"></div>
@@ -215,15 +221,18 @@
     function generateConfig() {
       const routerIp = document.getElementById("router").value.trim();
       const proxyLinks = document.getElementById("links").value.trim().split('\n').filter(line => line.trim());
+      const includeClashApi = document.getElementById("includeClashApi").checked;
       const resultDiv = document.getElementById("result");
       const warningsDiv = document.getElementById("warnings");
       const downloadLink = document.getElementById("downloadBtn");
+      const copyBtn = document.getElementById("copyBtn");
       const resultWrapper = document.getElementById("resultWrapper");
 
       if (!routerIp) {
         warningsDiv.innerHTML = "Ошибка: Параметр routerIp обязателен";
         resultWrapper.classList.add("d-none");
         downloadLink.classList.add("d-none");
+        copyBtn.classList.add("d-none");
         return;
       }
 
@@ -231,6 +240,7 @@
         warningsDiv.innerHTML = "Ошибка: Необходимо указать хотя бы одну прокси ссылку";
         resultWrapper.classList.add("d-none");
         downloadLink.classList.add("d-none");
+        copyBtn.classList.add("d-none");
         return;
       }
 
@@ -294,12 +304,7 @@
 
       const config = {
         experimental: {
-          cache_file: { enabledoys: true },
-          clash_api: {
-            external_controller: `${routerIp}:9090`,
-            external_ui: "ui",
-            access_control_allow_private_network: true
-          }
+          cache_file: { enabled: true }
         },
         log: { 
           level: "debug",
@@ -343,6 +348,14 @@
         }
       };
 
+      if (includeClashApi) {
+        config.experimental.clash_api = {
+          external_controller: `${routerIp}:9090`,
+          external_ui: "ui",
+          access_control_allow_private_network: true
+        };
+      }
+
       const jsonStr = JSON.stringify(config, null, 2);
       resultDiv.textContent = jsonStr;
       resultWrapper.classList.remove("d-none");
@@ -350,10 +363,22 @@
       const blob = new Blob([jsonStr], { type: "application/json" });
       downloadLink.href = URL.createObjectURL(blob);
       downloadLink.classList.remove("d-none");
+      copyBtn.classList.remove("d-none");
 
       warningsDiv.innerHTML = warnings.length > 0 
         ? "Некорректные или неподдерживаемые ссылки:<br>" + warnings.map(x => `– ${x}`).join("<br>")
         : "";
+    }
+
+    function copyConfig() {
+      const resultDiv = document.getElementById("result");
+      const text = resultDiv.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Конфигурация скопирована в буфер обмена!");
+      }).catch(err => {
+        console.error("Ошибка копирования:", err);
+        alert("Не удалось скопировать конфигурацию");
+      });
     }
   </script>
 </body>
