@@ -73,9 +73,14 @@
         const [uuid, serverPort] = url.href.replace("vless://", "").split('@');
         const [server, port] = serverPort.split(':');
         const params = new URLSearchParams(url.search);
-        return {
+    
+        const tag = decodeURIComponent(url.hash.slice(1)) || "VLESS";
+        const security = params.get("security") || "tls";
+        const flow = params.get("flow");
+    
+        const config = {
           type: "vless",
-          tag: decodeURIComponent(url.hash.slice(1)) || "VLESS",
+          tag,
           server,
           server_port: parseInt(port),
           uuid,
@@ -84,13 +89,32 @@
             enabled: true,
             server_name: params.get("sni") || server,
             insecure: false,
-            utls: { enabled: true, fingerprint: params.get("fp") || "chrome" }
-          },
-          transport: {
-            type: "ws",
-            path: params.get("path") || "/"
+            utls: {
+              enabled: true,
+              fingerprint: params.get("fp") || "chrome"
+            }
           }
         };
+    
+        if (flow) {
+          config.flow = flow;
+        }
+    
+        if (security === "reality") {
+          config.tls.reality = {
+            enabled: true,
+            public_key: params.get("pbk") || "",
+            short_id: params.get("sid") || ""
+          };
+          // Reality не использует transport
+        } else {
+          config.transport = {
+            type: params.get("type") || "ws",
+            path: params.get("path") || "/"
+          };
+        }
+    
+        return config;
       } catch {
         return null;
       }
