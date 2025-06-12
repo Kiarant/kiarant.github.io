@@ -210,9 +210,9 @@ opkg install "название пакета"</pre>
     <p>Запускаем:</p>
     <pre>sing-box -c /opt/etc/sing-box/config.json run</pre>
     <img src="media/image26.png" alt="Запуск Sing-Box">
-    <p>Если во время запуска возникла ошибка::</p>
+    <p>Если во время запуска возникла ошибка:</p>
     <pre>ERROR [0000] clash-api: download external ui error: Get "https://github.com/MetaCubeX/clash-api/download": EOF</pre>
-    <p>качаем UI вручную командой::</p>
+    <p>качаем UI вручную командой:</p>
     <pre>opkg update && opkg install curl && curl -L https://github.com/MetaCubeX/acl4ssr/archive/gh-pages.zip -o /tmp/ui.zip && unzip /tmp/ui.zip -d /opt/var/lib/sing-box/ && mv /opt/var/lib/sing-box/acl4ssr-gh-pages /opt/var/lib/sing-box/ui && rm /tmp/ui.zip</pre>
     <p>Зайти можно в браузере: адрес роутера:9090</p>
     <img src="media/image27.png" alt="Интерфейс Sing-Box">
