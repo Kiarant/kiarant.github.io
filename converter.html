@@ -2,39 +2,90 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Генератор конфига для sing-box</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 200px;
+      resize: vertical;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #downloadLink {
+      display: none;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #4CAF50;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: white;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+  </style>
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <div class="card shadow">
-      <div class="card-body">
-        <h3 class="card-title mb-4">Генератор конфига для sing-box</h3>
+<body>
+  <h1>Генератор конфига для sing-box</h1>
 
-        <div class="mb-3">
-          <label for="router" class="form-label">Адрес роутера:</label>
-          <input type="text" id="router" class="form-control" placeholder="например: 192.168.1.1">
-        </div>
+  <div class="input-group">
+    <label for="routerIp">Адрес роутера:</label>
+    <input type="text" id="routerIp" placeholder="Например: 192.168.1.1">
+  </div>
 
-        <div class="mb-3">
-          <label for="links" class="form-label">Вставьте ссылки:</label>
-          <textarea id="links" class="form-control" rows="8" placeholder="ss://, vless://, vmess:// и др. ссылки, одна на строку"></textarea>
-        </div>
+  <div class="input-group">
+    <label for="proxyLinks">Вставьте ссылки:</label>
+    <textarea id="proxyLinks" placeholder="Вставьте прокси ссылки (по одной на строку)"></textarea>
+  </div>
 
-        <div class="d-flex gap-2 mb-4">
-          <button class="btn btn-primary" onclick="generateConfig()">Сгенерировать config.json</button>
-          <a id="downloadBtn" class="btn btn-success d-none" download="config.json">⬇ Скачать config.json</a>
-        </div>
+  <div class="input-group">
+    <button onclick="generateConfig()">Сгенерировать config.json</button>
+    <a id="downloadLink" href="#" download="config.json">⬇ Скачать config.json</a>
+  </div>
 
-        <div id="warnings" class="text-danger mb-3"></div>
-
-        <div id="resultWrapper" class="d-none">
-          <h5>Результат:</h5>
-          <pre id="result" class="bg-dark text-white p-3 rounded" style="white-space: pre-wrap;"></pre>
-        </div>
-      </div>
-    </div>
+  <div class="input-group">
+    <label>Результат:</label>
+    <div id="result"></div>
   </div>
 
   <script>
@@ -51,8 +102,8 @@
         const [method, password] = decoded.split(':');
         const [server, port = "8388"] = serverPart.split(':');
 
-        // Определяем тег
-        const tag = decodeURIComponent(url.hash.slice(1)) || (url.search.includes("outline=1") ? "Outline" : "ShadowSocks");
+        const tag = decodeURIComponent(url.hash.slice(1)) || 
+                   (url.search.includes("outline=1") ? "Outline" : "ShadowSocks");
 
         return {
           type: "shadowsocks",
@@ -62,7 +113,8 @@
           method,
           password
         };
-      } catch {
+      } catch (error) {
+        console.log(`Ошибка парсинга SS: ${error.message}`);
         return null;
       }
     }
@@ -73,49 +125,65 @@
         const [uuid, serverPort] = url.href.replace("vless://", "").split('@');
         const [server, port] = serverPort.split(':');
         const params = new URLSearchParams(url.search);
-    
+
         const tag = decodeURIComponent(url.hash.slice(1)) || "VLESS";
-        const security = params.get("security") || "tls";
-        const flow = params.get("flow");
-    
+        const security = params.get("security") || "none";
+        const flow = params.get("flow") || params.get("mode");
+        const sni = params.get("sni");
+        const host = params.get("host");
+        const transportType = params.get("type") || "ws";
+
         const config = {
           type: "vless",
           tag,
           server,
           server_port: parseInt(port),
           uuid,
-          packet_encoding: "xudp",
-          tls: {
+          packet_encoding: "xudp"
+        };
+
+        if (security !== "none") {
+          config.tls = {
             enabled: true,
-            server_name: params.get("sni") || server,
+            server_name: sni || server,
             insecure: false,
             utls: {
               enabled: true,
               fingerprint: params.get("fp") || "chrome"
             }
+          };
+
+          if (security === "reality") {
+            config.tls.reality = {
+              enabled: true,
+              public_key: params.get("pbk") || "",
+              short_id: params.get("sid") || ""
+            };
           }
-        };
-    
-        if (flow) {
+        }
+
+        if (security !== "reality") {
+          config.transport = {
+            type: transportType
+          };
+
+          if (transportType === "ws") {
+            config.transport.path = params.get("path") || "/";
+            if (host) {
+              config.transport.headers = { Host: host };
+            }
+          } else if (transportType === "grpc" && params.get("path")) {
+            config.transport.serviceName = params.get("path");
+          }
+        }
+
+        if (flow && transportType !== "grpc") {
           config.flow = flow;
         }
-    
-        if (security === "reality") {
-          config.tls.reality = {
-            enabled: true,
-            public_key: params.get("pbk") || "",
-            short_id: params.get("sid") || ""
-          };
-          // Reality не использует transport
-        } else {
-          config.transport = {
-            type: params.get("type") || "ws",
-            path: params.get("path") || "/"
-          };
-        }
-    
+
         return config;
-      } catch {
+      } catch (error) {
+        console.log(`Ошибка парсинга VLESS: ${error.message}`);
         return null;
       }
     }
@@ -124,6 +192,7 @@
       try {
         const raw = line.replace("vmess://", "");
         const json = JSON.parse(atob(raw));
+        
         return {
           type: "vmess",
           tag: json.ps || "VMess",
@@ -137,7 +206,8 @@
             path: json.path || "/"
           }
         };
-      } catch {
+      } catch (error) {
+        console.log(`Ошибка парсинга VMess: ${error.message}`);
         return null;
       }
     }
@@ -147,6 +217,7 @@
         const url = new URL(line);
         const [password, hostPort] = url.href.replace("trojan://", "").split('@');
         const [server, port] = hostPort.split(':');
+        
         return {
           type: "trojan",
           tag: decodeURIComponent(url.hash.slice(1)) || "Trojan",
@@ -159,7 +230,8 @@
             insecure: false
           }
         };
-      } catch {
+      } catch (error) {
+        console.log(`Ошибка парсинга Trojan: ${error.message}`);
         return null;
       }
     }
@@ -168,7 +240,9 @@
       try {
         const url = new URL(line);
         const tag = decodeURIComponent(url.hash.slice(1)) || "TUIC";
-        const [uuid, password] = url.username.split(':');
+        const [uuid, password] = url.username.includes(':') ? 
+          url.username.split(':') : [url.username, url.password];
+        
         return {
           type: "tuic",
           tag,
@@ -183,35 +257,54 @@
             insecure: false
           }
         };
-      } catch {
+      } catch (error) {
+        console.log(`Ошибка парсинга TUIC: ${error.message}`);
         return null;
       }
     }
 
     function generateConfig() {
-      const rawLinks = document.getElementById("links").value.trim().split('\n');
-      const routerAddress = document.getElementById("router").value.trim() || "вписать_адрес_роутера";
+      const routerIp = document.getElementById('routerIp').value.trim();
+      const proxyLinks = document.getElementById('proxyLinks').value.split('\n').filter(line => line.trim());
+      const resultDiv = document.getElementById('result');
+      const downloadLink = document.getElementById('downloadLink');
+
+      if (!routerIp) {
+        resultDiv.textContent = 'Ошибка: Параметр routerIp обязателен';
+        return;
+      }
+
+      if (proxyLinks.length === 0) {
+        resultDiv.textContent = 'Ошибка: Необходимо указать хотя бы одну прокси ссылку';
+        return;
+      }
 
       const outbounds = [];
       const tags = [];
-      const invalidLinks = [];
+      const warnings = [];
 
-      for (const line of rawLinks) {
+      for (const line of proxyLinks) {
         const cleanLine = line.trim();
         if (!cleanLine) continue;
 
         let outbound = null;
 
-        if (cleanLine.startsWith("ssconf://")) {
-          invalidLinks.push(`${cleanLine} (Outline 2.0 — не поддерживается)`);
+        if(cleanLine.startsWith("ssconf://")) {
+          warnings.push(`${cleanLine} (Outline 2.0 — не поддерживается)`);
           continue;
         }
 
-        if (cleanLine.startsWith("ss://")) outbound = parseSS(cleanLine);
-        else if (cleanLine.startsWith("vless://")) outbound = parseVLESS(cleanLine);
-        else if (cleanLine.startsWith("vmess://")) outbound = parseVMess(cleanLine);
-        else if (cleanLine.startsWith("trojan://")) outbound = parseTrojan(cleanLine);
-        else if (cleanLine.startsWith("tuic://")) outbound = parseTUIC(cleanLine);
+        if (cleanLine.startsWith("ss://")) {
+          outbound = parseSS(cleanLine);
+        } else if (cleanLine.startsWith("vless://")) {
+          outbound = parseVLESS(cleanLine);
+        } else if (cleanLine.startsWith("vmess://")) {
+          outbound = parseVMess(cleanLine);
+        } else if (cleanLine.startsWith("trojan://")) {
+          outbound = parseTrojan(cleanLine);
+        } else if (cleanLine.startsWith("tuic://")) {
+          outbound = parseTUIC(cleanLine);
+        }
 
         if (outbound) {
           outbounds.push(outbound);
@@ -219,7 +312,7 @@
             tags.push(outbound.tag);
           }
         } else {
-          invalidLinks.push(cleanLine);
+          warnings.push(`Не удалось распарсить: ${cleanLine}`);
         }
       }
 
@@ -233,16 +326,30 @@
         });
       }
 
+      outbounds.push(
+        {
+          type: "direct",
+          tag: "direct"
+        },
+        {
+          type: "block",
+          tag: "block"
+        }
+      );
+
       const config = {
         experimental: {
           cache_file: { enabled: true },
           clash_api: {
-            external_controller: `${routerAddress}:9090`,
+            external_controller: `${routerIp}:9090`,
             external_ui: "ui",
             access_control_allow_private_network: true
           }
         },
-        log: { level: "debug" },
+        log: { 
+          level: "debug",
+          timestamp: true
+        },
         inbounds: [
           {
             type: "tun",
@@ -251,34 +358,51 @@
             address: "172.16.250.1/30",
             auto_route: false,
             strict_route: false,
-            sniff: true
+            sniff: true,
+            sniff_override_destination: false
           },
           {
             type: "mixed",
             tag: "mixed-in",
             listen: "0.0.0.0",
-            listen_port: 1080
+            listen_port: 1080,
+            sniff: true,
+            sniff_override_destination: false
           }
         ],
         outbounds,
-        route: { auto_detect_interface: false }
+        route: { 
+          auto_detect_interface: false,
+          final: tags.length > 0 ? "select" : "direct",
+          rules: [
+            {
+              protocol: "dns",
+              outbound: "dns-out"
+            },
+            {
+              network: "udp",
+              port: 443,
+              outbound: "block"
+            }
+          ]
+        }
       };
 
-      const jsonStr = JSON.stringify(config, null, 2);
-      document.getElementById("result").textContent = jsonStr;
-      document.getElementById("resultWrapper").classList.remove("d-none");
+      const result = {
+        success: true,
+        config,
+        warnings,
+        timestamp: new Date().toISOString()
+      };
 
-      const blob = new Blob([jsonStr], { type: "application/json" });
-      const link = document.getElementById("downloadBtn");
-      link.href = URL.createObjectURL(blob);
-      link.classList.remove("d-none");
-
-      const warningBox = document.getElementById("warnings");
-      if (invalidLinks.length > 0) {
-        warningBox.innerHTML = "Некорректные или неподдерживаемые ссылки:<br>" + invalidLinks.map(x => `– ${x}`).join("<br>");
-      } else {
-        warningBox.textContent = "";
+      resultDiv.textContent = JSON.stringify(result.config, null, 2);
+      if (result.warnings.length > 0) {
+        resultDiv.textContent += '\n\nПредупреждения:\n' + result.warnings.join('\n');
       }
+
+      const configBlob = new Blob([JSON.stringify(result.config, null, 2)], { type: 'application/json' });
+      downloadLink.href = URL.createObjectURL(configBlob);
+      downloadLink.style.display = 'inline-block';
     }
   </script>
 </body>
