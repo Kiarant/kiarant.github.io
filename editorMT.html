@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <style>
+    .guide-btn {
+    background: linear-gradient(45deg, #17a2b8, #138496);
+    margin-top: 10px;
+}
+.guide-btn:hover {
+    background: linear-gradient(45deg, #138496, #0f6f7d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+}
+.donate-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    margin-top: 10px;
+}
+.donate-btn:hover {
+    background: linear-gradient(45deg, #e65c5c, #e67e22);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+  </style>  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Редактор групп доменов</title>
@@ -13,9 +33,15 @@
     <div class="mb-3">
       <input type="file" id="fileInput" accept=".mtrickle" class="form-control">
     </div>
-    <div class="mb-3">
-      <button id="addGroupBtn" class="btn btn-primary">Добавить группу</button>
-      <button id="toggleThemeBtn" class="btn btn-secondary">Сменить тему</button>
+    <div class="button-group">
+      <button id="addGroupBtn">Добавить группу</button>
+      <button id="toggleThemeBtn">Сменить тему</button>
+      <a href="https://kiarant.github.io/" target="_blank">
+          <button class="guide-btn">Руководство</button>
+      </a>
+      <a href="https://yoomoney.ru/to/4100118816814288" target="_blank">
+          <button class="donate-btn">Донат</button>
+      </a>
     </div>
 
     <div id="groupsContainer"></div>
