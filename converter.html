@@ -10,11 +10,9 @@
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
-      background-color: #f0f0f0;
     }
     h1 {
       text-align: center;
-      color: #333;
     }
     .input-group {
       margin-bottom: 15px;
@@ -22,46 +20,39 @@
     label {
       display: block;
       margin-bottom: 5px;
-      font-weight: bold;
     }
     input, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      box-sizing: border-box;
     }
     textarea {
-      height: 200px;
-      resize: vertical;
+      height: 150px;
     }
     button {
-      background-color: #4CAF50;
-      color: white;
       padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin-right: 10px;
     }
     button:hover {
-      background-color: #45a049;
+      background-color: #0056b3;
     }
     #downloadLink {
       display: none;
-      margin-top: 10px;
+      margin-left: 10px;
       text-decoration: none;
-      color: #4CAF50;
+      color: #007bff;
     }
     #result {
       margin-top: 20px;
-      padding: 15px;
-      background-color: white;
+      padding: 10px;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      border: 1px solid #ddd;
       white-space: pre-wrap;
-      max-height: 400px;
-      overflow-y: auto;
     }
   </style>
 </head>
@@ -402,7 +393,7 @@
 
       const configBlob = new Blob([JSON.stringify(result.config, null, 2)], { type: 'application/json' });
       downloadLink.href = URL.createObjectURL(configBlob);
-      downloadLink.style.display = 'inline-block';
+      downloadLink.style.display = 'inline';
     }
   </script>
 </body>
