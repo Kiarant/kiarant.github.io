@@ -1,385 +1,477 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Генератор конфига для sing-box</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор конфига для sing-box</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+            transition: background 0.3s, color: 0.3s;
+        }
+        body.dark {
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        body.light {
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: background 0.3s, box-shadow:0.3s;
+        }
+        .container.dark {
+            background: #252526;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .container.light {
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #569cd6;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        label.dark {
+            color: #d4d4d4;
+        }
+        label.light {
+            color: #333;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        input[type="text"].dark, textarea.dark {
+            background: #2d2d2d;
+            color: #d4d4d4;
+            border-color: #333333;
+        }
+        input[type="text"].light, textarea.light {
+            background: #ffffff;
+            color: #333333;
+            border-color: #cccccc;
+        }
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: #569cd6;
+        }
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        .theme-toggle span {
+            font-size: 20px;
+            margin-right: 10px;
+            transition: color 0.3s;
+        }
+        .theme-toggle span.dark {
+            color: #d4d4d4;
+        }
+        .theme-toggle span.light {
+            color: #333;
+        }
+        .theme-toggle input[type="checkbox"] {
+            width: 40px;
+            height: 20px;
+            position: relative;
+            appearance: none;
+            background: #3c3c3c;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .theme-toggle input[type="checkbox"]:checked {
+            background: #569cd6;
+        }
+        .theme-toggle input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        .theme-toggle input[type="checkbox"]:checked::before {
+            transform: translateX(20px);
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #569cd6;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #4a87b8;
+        }
+        button#copyButton {
+            background: #4ec9b0;
+        }
+        button#copyButton:hover {
+            background: #3ea999;
+        }
+        pre {
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            border: 1px solid;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        pre.dark {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-color: #3c3c3c;
+        }
+        pre.light {
+            background: #f5f5f5;
+            color: #333;
+            border-color: #ccc;
+        }
+        code {
+            transition: color 0.3s;
+        }
+        code.dark {
+            color: #d4d4d4;
+        }
+        code.light {
+            color: #333;
+        }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .number { color: #b5cea8; }
+        .boolean { color: #569cd6; }
+        .punctuation { color: inherit; }
+    </style>
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <div class="card shadow">
-      <div class="card-body">
-        <h3 class="card-title mb-4">Генератор конфига для sing-box</h3>
-
-        <div class="mb-3">
-          <label for="router" class="form-label">Адрес роутера:</label>
-          <input type="text" id="router" class="form-control" placeholder="например: 192.168.1.1">
+<body class="dark">
+    <div class="container dark">
+        <div class="theme-toggle">
+            <span id="themeIcon" class="dark">☀</span>
+            <input type="checkbox" id="themeToggle" onchange="toggleTheme()">
         </div>
-
-        <div class="mb-3">
-          <label for="links" class="form-label">Вставьте ссылки:</label>
-          <textarea id="links" class="form-control" rows="8" placeholder="ss://, vless://, vmess:// и др. ссылки, одна на строку"></textarea>
+        <h1>Генератор конфига для sing-box</h1>
+        <label for="routerAddress" class="dark">IP-адрес роутера:</label>
+        <input type="text" id="routerAddress" class="dark" placeholder="Например, 192.168.0.132">
+        <label for="vlessLinks" class="dark">Вставьте ссылки:</label>
+        <textarea id="vlessLinks" class="dark" placeholder="Вставьте VLESS-ссылки, по одной на строку"></textarea>
+        <div class="checkbox-container">
+            <input type="checkbox" id="enableClashApi" checked>
+            <label for="enableClashApi" class="dark">Включить clash_api (для веб-интерфейса)</label>
         </div>
-
-        <div class="mb-3 form-check">
-          <input type="checkbox" id="includeClashApi" class="form-check-input" checked>
-          <label for="includeClashApi" class="form-check-label">Включить clash_api (для веб-интерфейса)</label>
+        <div class="button-group">
+            <button onclick="generateConfig()">Сгенерировать config.json</button>
+            <button onclick="downloadConfig()">⬇ Скачать config.json</button>
+            <button id="copyButton" onclick="copyConfig()">Скопировать</button>
         </div>
-
-        <div class="d-flex gap-2 mb-4">
-          <button class="btn btn-primary" onclick="generateConfig()">Сгенерировать config.json</button>
-          <a id="downloadBtn" class="btn btn-success d-none" download="config.json">⬇ Скачать config.json</a>
-          <button id="copyBtn" class="btn btn-secondary d-none" onclick="copyConfig()">Скопировать</button>
-        </div>
-
-        <div id="warnings" class="text-danger mb-3"></div>
-
-        <div id="resultWrapper" class="d-none">
-          <h5>Результат:</h5>
-          <pre id="result" class="bg-dark text-white p-3 rounded" style="white-space: pre-wrap;"></pre>
-        </div>
-      </div>
+        <label class="dark">Результат:</label>
+        <pre class="dark"><code id="configOutput" class="dark"></code></pre>
     </div>
-  </div>
 
-  <script>
-    function parseSS(line) {
-      try {
-        const url = new URL(line);
-        const [authPart, serverPart] = url.href.replace("ss://", "").split('@');
-        let decoded;
-        try {
-          decoded = atob(authPart);
-        } catch {
-          decoded = decodeURIComponent(authPart);
-        }
-        const [method, password] = decoded.split(':');
-        const [server, port = "8388"] = serverPart.split(':');
-
-        const tag = decodeURIComponent(url.hash.slice(1)) || 
-                   (url.search.includes("outline=1") ? "Outline" : "ShadowSocks");
-
-        return {
-          type: "shadowsocks",
-          tag,
-          server,
-          server_port: parseInt(port),
-          method,
-          password
-        };
-      } catch (error) {
-        console.log(`Ошибка парсинга SS: ${error.message}`);
-        return null;
-      }
-    }
-
-    function parseVLESS(line) {
-      try {
-        const url = new URL(line);
-        const [uuid, serverPort] = url.href.replace("vless://", "").split('@');
-        const [server, port] = serverPort.split(':');
-        const params = new URLSearchParams(url.search);
-
-        const tag = decodeURIComponent(url.hash.slice(1)) || "VLESS";
-        const security = params.get("security") || "none";
-        const flow = params.get("flow") || params.get("mode");
-        const sni = params.get("sni");
-        const host = params.get("host");
-        const transportType = params.get("type") || "ws";
-
-        const config = {
-          type: "vless",
-          tag,
-          server,
-          server_port: parseInt(port),
-          uuid,
-          packet_encoding: "xudp"
-        };
-
-        if (security !== "none") {
-          config.tls = {
-            enabled: true,
-            server_name: sni || server,
-            insecure: false,
-            utls: {
-              enabled: true,
-              fingerprint: params.get("fp") || "chrome"
-            }
-          };
-
-          if (security === "reality") {
-            config.tls.reality = {
-              enabled: true,
-              public_key: params.get("pbk") || "",
-              short_id: params.get("sid") || ""
-            };
-          }
+    <script>
+        // Загрузка темы из localStorage
+        function loadTheme() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.body.className = theme;
+            document.querySelector('.container').className = `container ${theme}`;
+            document.querySelector('#routerAddress').className = theme;
+            document.querySelector('#vlessLinks').className = theme;
+            document.querySelectorAll('label').forEach(label => label.className = theme);
+            document.querySelector('pre').className = theme;
+            document.querySelector('#configOutput').className = theme;
+            document.querySelector('#themeIcon').className = theme;
+            document.querySelector('#themeIcon').textContent = theme === 'dark' ? '☀' : '☾';
+            document.querySelector('#themeToggle').checked = theme === 'light';
         }
 
-        if (security !== "reality") {
-          config.transport = {
-            type: transportType
-          };
-
-          if (transportType === "ws") {
-            config.transport.path = params.get("path") || "/";
-            if (host) {
-              config.transport.headers = { Host: host };
-            }
-          } else if (transportType === "grpc" && params.get("path")) {
-            config.transport.serviceName = params.get("path");
-          }
+        // Переключение темы
+        function toggleTheme() {
+            const isLight = document.querySelector('#themeToggle').checked;
+            const theme = isLight ? 'light' : 'dark';
+            localStorage.setItem('theme', theme);
+            loadTheme();
         }
 
-        if (flow && transportType !== "grpc") {
-          config.flow = flow;
-        }
+        // Загрузка темы при старте
+        loadTheme();
 
-        return config;
-      } catch (error) {
-        console.log(`Ошибка парсинга VLESS: ${error.message}`);
-        return null;
-      }
-    }
-
-    function parseVMess(line) {
-      try {
-        const raw = line.replace("vmess://", "");
-        const json = JSON.parse(atob(raw));
-        
-        return {
-          type: "vmess",
-          tag: json.ps || "VMess",
-          server: json.add,
-          server_port: parseInt(json.port),
-          uuid: json.id,
-          security: json.security || "auto",
-          tls: json.tls === "tls",
-          transport: {
-            type: json.net || "tcp",
-            path: json.path || "/"
-          }
-        };
-      } catch (error) {
-        console.log(`Ошибка парсинга VMess: ${error.message}`);
-        return null;
-      }
-    }
-
-    function parseTrojan(line) {
-      try {
-        const url = new URL(line);
-        const [password, hostPort] = url.href.replace("trojan://", "").split('@');
-        const [server, port] = hostPort.split(':');
-        
-        return {
-          type: "trojan",
-          tag: decodeURIComponent(url.hash.slice(1)) || "Trojan",
-          server,
-          server_port: parseInt(port),
-          password,
-          tls: {
-            enabled: true,
-            server_name: url.searchParams.get("sni") || server,
-            insecure: false
-          }
-        };
-      } catch (error) {
-        console.log(`Ошибка парсинга Trojan: ${error.message}`);
-        return null;
-      }
-    }
-
-    function parseTUIC(line) {
-      try {
-        const url = new URL(line);
-        const tag = decodeURIComponent(url.hash.slice(1)) || "TUIC";
-        const [uuid, password] = url.username.includes(':') ? 
-          url.username.split(':') : [url.username, url.password];
-        
-        return {
-          type: "tuic",
-          tag,
-          server: url.hostname,
-          server_port: parseInt(url.port),
-          uuid,
-          password,
-          alpn: ["h3"],
-          tls: {
-            enabled: true,
-            server_name: url.hostname,
-            insecure: false
-          }
-        };
-      } catch (error) {
-        console.log(`Ошибка парсинга TUIC: ${error.message}`);
-        return null;
-      }
-    }
-
-    function generateConfig() {
-      const routerIp = document.getElementById("router").value.trim();
-      const proxyLinks = document.getElementById("links").value.trim().split('\n').filter(line => line.trim());
-      const includeClashApi = document.getElementById("includeClashApi").checked;
-      const resultDiv = document.getElementById("result");
-      const warningsDiv = document.getElementById("warnings");
-      const downloadLink = document.getElementById("downloadBtn");
-      const copyBtn = document.getElementById("copyBtn");
-      const resultWrapper = document.getElementById("resultWrapper");
-
-      if (!routerIp) {
-        warningsDiv.innerHTML = "Ошибка: Параметр routerIp обязателен";
-        resultWrapper.classList.add("d-none");
-        downloadLink.classList.add("d-none");
-        copyBtn.classList.add("d-none");
-        return;
-      }
-
-      if (proxyLinks.length === 0) {
-        warningsDiv.innerHTML = "Ошибка: Необходимо указать хотя бы одну прокси ссылку";
-        resultWrapper.classList.add("d-none");
-        downloadLink.classList.add("d-none");
-        copyBtn.classList.add("d-none");
-        return;
-      }
-
-      const outbounds = [];
-      const tags = [];
-      const warnings = [];
-
-      for (const line of proxyLinks) {
-        const cleanLine = line.trim();
-        if (!cleanLine) continue;
-
-        let outbound = null;
-
-        if (cleanLine.startsWith("ssconf://")) {
-          warnings.push(`${cleanLine} (Outline 2.0 — не поддерживается)`);
-          continue;
-        }
-
-        if (cleanLine.startsWith("ss://")) {
-          outbound = parseSS(cleanLine);
-        } else if (cleanLine.startsWith("vless://")) {
-          outbound = parseVLESS(cleanLine);
-        } else if (cleanLine.startsWith("vmess://")) {
-          outbound = parseVMess(cleanLine);
-        } else if (cleanLine.startsWith("trojan://")) {
-          outbound = parseTrojan(cleanLine);
-        } else if (cleanLine.startsWith("tuic://")) {
-          outbound = parseTUIC(cleanLine);
-        }
-
-        if (outbound) {
-          outbounds.push(outbound);
-          if (["vless", "vmess", "trojan", "tuic"].includes(outbound.type)) {
-            tags.push(outbound.tag);
-          }
-        } else {
-          warnings.push(`Не удалось распарсить: ${cleanLine}`);
-        }
-      }
-
-      if (tags.length > 0) {
-        outbounds.unshift({
-          type: "selector",
-          tag: "select",
-          outbounds: tags,
-          default: tags[0],
-          interrupt_exist_connections: false
-        });
-      }
-
-      outbounds.push(
-        {
-          type: "direct",
-          tag: "direct"
-        },
-        {
-          type: "block",
-          tag: "block"
-        }
-      );
-
-      const config = {
-        experimental: {
-          cache_file: { enabled: true }
-        },
-        log: { 
-          level: "debug",
-          timestamp: true
-        },
-        inbounds: [
-          {
-            type: "tun",
-            interface_name: "tun0",
-            domain_strategy: "ipv4_only",
-            address: "172.16.250.1/30",
-            auto_route: false,
-            strict_route: false,
-            sniff: true,
-            sniff_override_destination: false
-          },
-          {
-            type: "mixed",
-            tag: "mixed-in",
-            listen: "0.0.0.0",
-            listen_port: 1080,
-            sniff: true,
-            sniff_override_destination: false
-          }
-        ],
-        outbounds,
-        route: { 
-          auto_detect_interface: false,
-          final: tags.length > 0 ? "select" : "direct",
-          rules: [
-            {
-              protocol: "dns",
-              outbound: "dns-out"
+        // Базовый шаблон конфига
+        const baseConfig = {
+            experimental: {
+                cache_file: { enabled: true }
             },
-            {
-              network: "udp",
-              port: 443,
-              outbound: "block"
+            log: {
+                level: "debug",
+                timestamp: true
+            },
+            inbounds: [
+                {
+                    type: "tun",
+                    interface_name: "tun0",
+                    domain_strategy: "ipv4_only",
+                    address: "172.16.250.1/30",
+                    auto_route: false,
+                    strict_route: false,
+                    sniff: true,
+                    sniff_override_destination: false
+                },
+                {
+                    type: "mixed",
+                    tag: "mixed-in",
+                    listen: "0.0.0.0",
+                    listen_port: 1080,
+                    sniff: true,
+                    sniff_override_destination: false
+                }
+            ],
+            outbounds: [],
+            route: {
+                auto_detect_interface: false,
+                final: "select",
+                rules: [
+                    {
+                        protocol: "dns",
+                        outbound: "dns-out"
+                    },
+                    {
+                        network: "udp",
+                        port: 443,
+                        outbound: "block"
+                    }
+                ]
             }
-          ]
-        }
-      };
-
-      if (includeClashApi) {
-        config.experimental.clash_api = {
-          external_controller: `${routerIp}:9090`,
-          external_ui: "ui",
-          access_control_allow_private_network: true
         };
-      }
 
-      const jsonStr = JSON.stringify(config, null, 2);
-      resultDiv.textContent = jsonStr;
-      resultWrapper.classList.remove("d-none");
+        // Функция для парсинга VLESS-URL
+        function parseVlessUrl(url) {
+            const regex = /^vless:\/\/([^@]+)@([^:]+):(\d+)\?(.+)#(.+)$/;
+            const match = url.match(regex);
+            if (!match) return null;
 
-      const blob = new Blob([jsonStr], { type: "application/json" });
-      downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.classList.remove("d-none");
-      copyBtn.classList.remove("d-none");
+            const [, uuid, server, port, query, tag] = match;
+            const params = new URLSearchParams(query);
 
-      warningsDiv.innerHTML = warnings.length > 0 
-        ? "Некорректные или неподдерживаемые ссылки:<br>" + warnings.map(x => `– ${x}`).join("<br>")
-        : "";
-    }
+            return {
+                uuid,
+                server,
+                server_port: parseInt(port),
+                type: params.get('type') || 'tcp',
+                security: params.get('security') || 'none',
+                sni: params.get('sni'),
+                path: params.get('path'),
+                fp: params.get('fp'),
+                alpn: params.get('alpn'),
+                flow: params.get('flow'),
+                pbk: params.get('pbk'),
+                sid: params.get('sid'),
+                spx: params.get('spx'),
+                host: params.get('host'),
+                encryption: params.get('encryption'),
+                tag: decodeURIComponent(tag.trim())
+            };
+        }
 
-    function copyConfig() {
-      const resultDiv = document.getElementById("result");
-      const text = resultDiv.textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Конфигурация скопирована в буфер обмена!");
-      }).catch(err => {
-        console.error("Ошибка копирования:", err);
-        alert("Не удалось скопировать конфигурацию");
-      });
-    }
-  </script>
+        // Генерация конфига
+        function generateConfig() {
+            const routerIp = document.getElementById('routerAddress').value.trim();
+            const vlessLinksInput = document.getElementById('vlessLinks').value.trim();
+            const enableClashApi = document.getElementById('enableClashApi').checked;
+            const output = document.getElementById('configOutput');
+
+            // Проверка ввода
+            if (!vlessLinksInput) {
+                output.textContent = 'Вставьте хотя бы одну VLESS-ссылку.';
+                return;
+            }
+
+            // Парсинг списка VLESS-ссылок
+            const vlessLinks = vlessLinksInput.split('\n').map(link => link.trim()).filter(link => link);
+            const parsedLinks = vlessLinks.map(parseVlessUrl).filter(link => link !== null);
+
+            if (parsedLinks.length === 0) {
+                output.textContent = 'Нет валидных VLESS-ссылок.';
+                return;
+            }
+
+            // Копируем базовый конфиг
+            const config = JSON.parse(JSON.stringify(baseConfig));
+
+            // Настраиваем clash_api
+            if (enableClashApi) {
+                if (!routerIp) {
+                    output.textContent = 'Укажите IP-адрес роутера для включения clash_api.';
+                    return;
+                }
+                config.experimental.clash_api = {
+                    external_controller: `${routerIp}:9090`,
+                    external_ui: "ui",
+                    access_control_allow_private_network: true
+                };
+            } else {
+                delete config.experimental.clash_api;
+            }
+
+            // Формируем outbounds
+            const outbounds = parsedLinks.map(parsed => {
+                const outbound = {
+                    type: "vless",
+                    tag: parsed.tag,
+                    server: parsed.server,
+                    server_port: parsed.server_port,
+                    uuid: parsed.uuid,
+                    packet_encoding: "xudp"
+                };
+
+                // Настраиваем TLS
+                if (parsed.security === 'tls' || parsed.security === 'reality') {
+                    outbound.tls = {
+                        enabled: true,
+                        server_name: parsed.sni || parsed.server,
+                        insecure: parsed.security === 'tls' ? false : false,
+                        utls: {
+                            enabled: true,
+                            fingerprint: parsed.fp || "chrome"
+                        }
+                    };
+
+                    if (parsed.security === 'reality') {
+                        outbound.tls.reality = {
+                            enabled: true,
+                            public_key: parsed.pbk,
+                            short_id: parsed.sid
+                        };
+                    }
+                }
+
+                // Настраиваем транспорт
+                if (parsed.type === 'ws') {
+                    outbound.transport = {
+                        type: "ws",
+                        path: parsed.path || "/",
+                        headers: parsed.host ? { Host: parsed.host } : undefined
+                    };
+                } else if (parsed.type === 'grpc') {
+                    outbound.transport = {
+                        type: "grpc",
+                        service_name: parsed.serviceName || ""
+                    };
+                }
+
+                return outbound;
+            });
+
+            // Добавляем outbounds в конфиг
+            config.outbounds = outbounds;
+
+            // Добавляем селектор
+            if (outbounds.length > 0) {
+                config.outbounds.unshift({
+                    type: "selector",
+                    tag: "select",
+                    outbounds: outbounds.map(out => out.tag),
+                    default: outbounds[0].tag,
+                    interrupt_exist_connections: false
+                });
+            }
+
+            // Добавляем direct, block и dns outbounds
+            config.outbounds.push(
+                { type: "direct", tag: "direct" },
+                { type: "block", tag: "block" },
+                { type: "dns", tag: "dns_out" }
+            );
+
+            // Выводим конфиг с подсветкой
+            const jsonString = JSON.stringify(config, null, 2);
+            output.innerHTML = highlightJson(jsonString);
+        }
+
+        // Функция для скачивания конфига
+        function downloadConfig() {
+            const configOutput = document.getElementById('configOutput').textContent;
+            if (!configOutput || configOutput.startsWith('Вставьте') || configOutput.startsWith('Нет валидных') || configOutput.startsWith('Укажите')) {
+                alert('Сначала сгенерируйте конфиг.');
+                return;
+            }
+            const blob = new Blob([configOutput], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Функция для копирования конфига
+        function copyConfig() {
+            const configOutput = document.getElementById('configOutput').textContent;
+            if (!configOutput || configOutput.startsWith('Вставьте') || configOutput.startsWith('Нет валидных') || configOutput.startsWith('Укажите')) {
+                alert('Сначала сгенерируйте конфиг.');
+                return;
+            }
+            navigator.clipboard.writeText(configOutput).then(() => {
+                alert('Конфиг скопирован в буфер обмена!');
+            }).catch(() => {
+                alert('Ошибка при копировании.');
+            });
+        }
+
+        // Функция для подсветки JSON
+        function highlightJson(json) {
+            return json.replace(/(".*?")(:)|(\b(true|false|null)\b)|(\b\d+\b)|([\{\}\[\],:])/g, (match, p1, p2, p3, p4, p5, p6) => {
+                if (p1 && p2) return `<span class="string">${p1}</span>${p2}`;
+                if (p3) return `<span class="boolean">${p3}</span>`;
+                if (p4) return `<span class="number">${p4}</span>`;
+                if (p5) return `<span class="punctuation">${p5}</span>`;
+                return match;
+            });
+        }
+    </script>
 </body>
 </html>
