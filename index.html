@@ -70,7 +70,7 @@
         <li>8.8.4.4 — <code>dns.google.com</code></li>
         <li>8.8.8.8 — <code>dns.google.com</code></li>
     </ul>
-    <p><a href="media/image1.png">Скриншот: Настройка DNS в интерфейсе роутера</a></p>
+    <p><img src="media/image1.png" alt="Настройка DNS серверов"></p>
 
     <h3>Вариант 2: Настройка через CLI</h3>
     <pre>
@@ -80,27 +80,27 @@ dns-proxy tls upstream 8.8.4.4 sni dns.google
 dns-proxy tls upstream 8.8.8.8 sni dns.google
 system configuration save
     </pre>
-    <p><a href="media/image2.png">Скриншот: Настройка через CLI</a></p>
-    <p><a href="media/image3.png">Скриншот: Дополнительная настройка CLI</a></p>
+    <p><img src="media/image2.png" alt="Настройка DNS через CLI"></p>
+    <p><img src="media/image3.png" alt="Дополнительная настройка CLI"></p>
     <p>В настройках интернет-соединения включите «Игнорировать DNSv4 интернет-провайдера» (и DNSv6, если используется IPv6).</p>
-    <p><a href="media/image4.png">Скриншот: Настройка игнорирования DNS</a></p>
+    <p><img src="media/image4.png" alt="Игнорирование DNS провайдера"></p>
 
     <h2>2. Установка Entware</h2>
     <h3>Подготовка флешки</h3>
     <p>Отформатируйте USB накопитель в ext4. Используйте утилиты, такие как MiniTool Partition Wizard или Paragon Partition Manager, так как Windows не поддерживает ext4 стандартными средствами.</p>
     <p><a href="https://help.keenetic.com">Ссылка на Keenetic Help</a></p>
-    <p><a href="media/image5.png">Скриншот: Форматирование флешки</a></p>
+    <p><img src="media/image5.png" alt="Форматирование флешки"></p>
 
     <h3>Подготовка роутера</h3>
     <p>В общих настройках системы установите компонент «Поддержка открытых пакетов» (OPKG).</p>
-    <p><a href="media/image6.png">Скриншот: Установка компонента OPKG</a></p>
+    <p><img src="media/image6.png" alt="Установка компонента OPKG"></p>
 
     <h3>Вариант установки 1: Через CLI</h3>
     <ol>
         <li>Зайдите в командную строку роутера: <a href="http://192.168.1.1/a">http://192.168.1.1/a</a> или через «Шестеренку» > «Командная строка».</li>
-        <p><a href="media/image8.png">Скриншот: Доступ к CLI</a></p>
+        <p><img src="media/image8.png" alt="Доступ к командной строке"></p>
         <li>Введите: <code>opkg disk</code>, нажмите Tab, выберите флешку.</li>
-        <p><a href="media/image9.png">Скриншот: Выбор флешки в CLI</a></p>
+        <p><img src="media/image9.png" alt="Выбор флешки в CLI"></p>
         <li>Вставьте ссылку для вашей архитектуры:
             <ul>
                 <li>mipsel: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz</a></li>
@@ -108,7 +108,7 @@ system configuration save
                 <li>mips: <a href="https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz">https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz</a></li>
             </ul>
         </li>
-        <p><a href="media/image10.png">Скриншот: Установка Entware через CLI</a></p>
+        <p><img src="media/image10.png" alt="Установка Entware через CLI"></p>
         <li>Нажмите «Отправить запрос».</li>
         <li>Перейдите во вкладку «Диагностика», откройте журнал, дождитесь: <code>Opkg::Manager: /opt/etc/init.d/doinstall: [5/5] "Entware" installed!</code></li>
     </ol>
@@ -117,14 +117,14 @@ system configuration save
     <ol>
         <li>Скачайте инсталлятор Entware для вашего роутера, например: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">mipsel-installer.tar.gz</a>.</li>
         <li>Вставьте флешку в роутер, зайдите в «Приложения», выберите флешку.</li>
-        <p><a href="media/image11.png">Скриншот: Выбор флешки в приложениях</a></p>
+        <p><img src="media/image11.png" alt="Выбор флешки в приложениях"></p>
         <li>Создайте папку <code>install</code> в корне флешки, загрузите туда инсталлятор.</li>
-        <p><a href="media/image12.png">Скриншот: Создание папки install</a></p>
-        <p><a href="media/image13.png">Скриншот: Загрузка инсталлятора</a></p>
+        <p><img src="media/image12.png" alt="Создание папки install"></p>
+        <p><img src="media/image13.png" alt="Загрузка инсталлятора"></p>
         <li>Перейдите во вкладку OPKG, выберите накопитель, нажмите «Сохранить».</li>
-        <p><a href="media/image14.png">Скриншот: Настройка OPKG</a></p>
+        <p><img src="media/image14.png" alt="Настройка OPKG"></p>
         <li>Следите за установкой во вкладке «Диагностика». Ожидайте: <code>Opkg::Manager: /opt/etc/init.d/doinstall: [5/5] "Entware" installed!</code></li>
-        <p><a href="media/image15.png">Скриншот: Журнал установки</a></p>
+        <p><img src="media/image15.png" alt="Журнал установки"></p>
     </ol>
 
     <h2>3. Установка Magitrickle</h2>
@@ -133,8 +133,8 @@ system configuration save
         <li>Адрес: IP роутера, порт: 222 (или 22, если «Сервер SSH» не установлен).</li>
         <li>Логин: <code>root</code>, пароль: <code>keenetic</code> (смените пароль командой <code>passwd</code>).</li>
     </ul>
-    <p><a href="media/image16.png">Скриншот: Подключение через SSH</a></p>
-    <p><a href="media/image17.png">Скриншот: Ввод логина и пароля</a></p>
+    <p><img src="media/image16.png" alt="Подключение через SSH"></p>
+    <p><img src="media/image17.png" alt="Ввод логина и пароля"></p>
 
     <p>Поочередно введите команды:</p>
     <pre>
@@ -147,16 +147,16 @@ opkg update && opkg install magitrickle
 opkg update && opkg install magitrickle
 /opt/etc/init.d/S99magitrickle restart
     </pre>
-    <p><a href="media/image18.png">Скриншот: Установка Magitrickle</a></p>
+    <p><img src="media/image18.png" alt="Установка Magitrickle"></p>
     <p>Magitrickle запущен. Зайдите через браузер: <code>адрес_роутера:8080</code></p>
-    <p><a href="media/image19.png">Скриншот: Интерфейс Magitrickle</a></p>
+    <p><img src="media/image19.png" alt="Интерфейс Magitrickle"></p>
 
     <h2>4. Установка Sing-Box</h2>
     <p>Установите Sing-Box:</p>
     <pre>
 opkg install sing-box-go
     </pre>
-    <p><a href="media/image20.png">Скриншот: Установка Sing-Box</a></p>
+    <p><img src="media/image20.png" alt="Установка Sing-Box"></p>
 
     <h3>Создание конфига</h3>
     <p>Используйте генераторы конфига:</p>
@@ -166,8 +166,8 @@ opkg install sing-box-go
     </ul>
     <p><strong>Примечание:</strong> 100% работоспособность конфига не гарантируется из-за разных типов конфигураций.</p>
     <p>Загрузите конфиг в <code>/opt/etc/sing-box/</code> (замените стандартный). Рекомендуется использовать WinSCP (адрес роутера, порт 222, логин <code>root</code>, пароль <code>keenetic</code>).</p>
-    <p><a href="media/image21.png">Скриншот: Загрузка конфига через WinSCP</a></p>
-    <p><a href="media/image22.png">Скриншот: Настройка WinSCP</a></p>
+    <p><img src="media/image21.png" alt="Загрузка конфига через WinSCP"></p>
+    <p><img src="media/image22.png" alt="Настройка WinSCP"></p>
 
     <h3>Ручной способ создания конфига (by Ponywka)</h3>
     <ol>
@@ -251,31 +251,31 @@ opkg install sing-box-go
     <pre>
 sing-box -c /opt/etc/sing-box/config.json check
     </pre>
-    <p><a href="media/image23.png">Скриншот: Проверка конфига Sing-Box</a></p>
+    <p><img src="media/image23.png" alt="Проверка конфига Sing-Box"></p>
     <p>Запустите Sing-Box:</p>
     <pre>
 /opt/etc/init.d/S99sing-box start
     </pre>
-    <p><a href="media/image24.png">Скриншот: Запуск Sing-Box</a></p>
+    <p><img src="media/image24.png" alt="Запуск Sing-Box"></p>
     <p>Зайдите через браузер: <code>адрес_роутера:9090</code></p>
-    <p><a href="media/image25.png">Скриншот: Интерфейс Sing-Box</a></p>
+    <p><img src="media/image25.png" alt="Интерфейс Sing-Box"></p>
     <p>Во вкладке Proxies выберите подключение из конфига для интерфейса <code>tun0</code>.</p>
-    <p><a href="media/image26.png">Скриншот: Выбор подключения в Proxies</a></p>
+    <p><img src="media/image26.png" alt="Выбор подключения в Proxies"></p>
 
     <h2>5. Настройка маршрутизации</h2>
     <p>Перейдите в интерфейс Magitrickle: <code>192.168.1.1:8080</code></p>
     <ol>
         <li>Нажмите «+», создайте группу.</li>
         <li>Выберите интерфейс: <code>tun0</code> или <code>singtun0</code>.</li>
-        <p><a href="media/image27.png">Скриншот: Создание группы в Magitrickle</a></p>
+        <p><img src="media/image27.png" alt="Создание группы в Magitrickle"></p>
         <li>Для проверки укажите в Pattern, например, <code>2ip.ru</code>, сохраните.</li>
-        <p><a href="media/image28.png">Скриншот: Настройка Pattern</a></p>
+        <p><img src="media/image28.png" alt="Настройка Pattern"></p>
         <li>Откройте браузер в режиме инкогнито, зайдите на <a href="https://2ip.ru">2ip.ru</a>, проверьте.</li>
-        <p><a href="media/image29.png">Скриншот: Проверка на 2ip.ru</a></p>
+        <p><img src="media/image29.png" alt="Проверка на 2ip.ru"></p>
     </ol>
     <p>Можно использовать любые интерфейсы и создавать группы с разными интерфейсами.</p>
     <p>Список доменов для сервисов: <a href="https://iplist.opencck.org/ru">iplist.opencck.org</a> (формат «Text», тип «Домены», только wildcard).</p>
-    <p><a href="media/image30.png">Скриншот: Список доменов</a></p>
+    <p><img src="media/image30.png" alt="Список доменов"></p>
     <p>Для массового импорта доменов используйте редакторы:</p>
     <ul>
         <li><a href="https://kiarant.github.io/editorMT">Kiarant EditorMT</a></li>
@@ -286,13 +286,13 @@ sing-box -c /opt/etc/sing-box/config.json check
     <p>В интерфейсе Magitrickle доступны следующие типы правил:</p>
     <ul>
         <li><strong>Namespace (Именное пространство):</strong> Охватывает домен и поддомены. Например, <code>example.com</code>.</li>
-        <p><a href="media/image31.png">Скриншот: Namespace</a></p>
+        <p><img src="media/image31.png" alt="Namespace"></p>
         <li><strong>Wildcard (Подстановочный шаблон):</strong> Использует <code>*</code> и <code>?</code>. Например, <code>*example.com</code>.</li>
-        <p><a href="media/image32.png">Скриншот: Wildcard</a></p>
+        <p><img src="media/image32.png" alt="Wildcard"></p>
         <li><strong>Domain (Точный домен):</strong> Только указанный домен, без поддоменов. Например, <code>sub.example.com</code>.</li>
-        <p><a href="media/image33.png">Скриншот: Domain</a></p>
+        <p><img src="media/image33.png" alt="Domain"></p>
         <li><strong>RegExp (Регулярное выражение):</strong> Для опытных пользователей, использует парсер <code>dlclark/regexp2</code>. Например, <code>^[a-z]*example\.com$</code>.</li>
-        <p><a href="media/image34.png">Скриншот: RegExp</a></p>
+        <p><img src="media/image34.png" alt="RegExp"></p>
     </ul>
 
     <h2>7. Поддержка автора</h2>
