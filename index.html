@@ -3,286 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MagiTrickle+SingBox+WARP Руководство</title>
+    <title>Magitrickle + SingBox Руководство</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            max-width: 900px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
             color: #333;
         }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
         }
-        h2 {
-            color: #34495e;
-            margin-top: 30px;
+        code {
+            font-family: Consolas, monospace;
         }
         a {
-            color: #3498db;
+            color: #0066cc;
             text-decoration: none;
         }
         a:hover {
             text-decoration: underline;
         }
-        code {
-            background-color: #f8f8f8;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        pre {
-            background-color: #f8f8f8;
-            padding: 12px;
-            border-radius: 5px;
-            overflow-x: auto;
-            line-height: 1.4;
-        }
-        .note {
-            background-color: #e7f5fe;
-            border-left: 4px solid #3498db;
-            padding: 12px 15px;
-            margin: 20px 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .warning {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px 15px;
-            margin: 20px 0;
-            border-radius: 0 4px 4px 0;
-        }
         img {
             max-width: 100%;
             height: auto;
-            display: block;
-            margin: 20px auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
         }
-        .highlight {
-            background-color: yellow;
-            padding: 0 2px;
-        }
-        .image-caption {
-            text-align: center;
-            font-style: italic;
-            color: #666;
-            margin-top: -15px;
-            margin-bottom: 20px;
-        }
-        ul {
+        ul, ol {
+            margin: 10px 0;
             padding-left: 20px;
         }
         li {
-            margin-bottom: 8px;
-        }
-            .donate-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-            display: inline-block;
-            text-align: center;
-        }
-        .donate-btn:hover {
-            background: linear-gradient(45deg, #e65c5c, #e67e22);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-        }
-        .footer-links {
-            text-align: center;
-            margin-top: 30px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>MT+SingBox+WARP Руководство</h1>
+    <h1>Magitrickle + SingBox Руководство</h1>
+    <p><a href="https://magitrickle.dev">MagiTrickle</a> | <a href="https://sing-box.sagernet.org/">SingBox</a></p>
 
-    <p>MagiTrickle -- <a href="https://github.com/MagiTrickle/MagiTrickle" target="_blank">https://github.com/MagiTrickle/MagiTrickle</a></p>
-    <p>SingBox - <a href="https://sing-box.sagernet.org/" target="_blank">https://sing-box.sagernet.org/</a></p>
-    <p>WARP - <a href="https://github.com/ImMALWARE/bash-warp-generator" target="_blank">https://github.com/ImMALWARE/bash-warp-generator/</a></p>
-    
-    <h2>Что потребуется:</h2>
+    <h2>Что потребуется</h2>
     <ul>
-        <li>роутер Keenetic с USB портом (или что-то с прошивкой Keenetic) подключенный к интернету;</li>
-        <li>USB накопитель, хватит и 1 ГБ (если кто-то использует USB модемы -- USB Hub работает нормально);</li>
-        <li>свободное время.</li>
+        <li>Роутер Keenetic с USB портом (или с прошивкой Keenetic), подключенный к интернету;</li>
+        <li>USB накопитель (хватит 1 ГБ, USB Hub работает с USB модемами);</li>
+        <li>Свободное время.</li>
     </ul>
+    <p><strong>Протестировано на:</strong> Keenetic Giga KN-1011/KN-1012, Keenetic Viva KN-1913, Netis N6, Xiaomi MiRouter 3Gv1 (прошивка Keenetic).</p>
 
-    <p>Протестировано на Keenetic Giga KN-1011/KN-1012, Keenetic Viva KN-1913, Netis N6, Xiaomi MiRouter 3Gv1 (прошивка Keenetic).</p>
+    <h2>1. Настройка DoT и DoH вместо провайдерского DNS</h2>
+    <p>Если уже настроено, пропустите этот пункт.</p>
 
-    <h2>1. Настраиваем DoT и DoH сервера. Если уже есть, пропускаете этот пункт.</h2>
-    <p>Можно сделать во вкладке «Сетевые правила» > «Интернет фильтры» > «Настройка DNS»</p>
-    
-    <img src="media/image1.png" alt="Настройка DNS серверов">
-    <p class="image-caption">Настройка DNS в интерфейсе роутера</p>
-    
-    <p>Или командами в CLI:</p>
-    <pre>dns-proxy tls upstream 1.1.1.1 sni cloudflare-dns.com
+    <h3>Вариант 1: Настройка через интерфейс роутера</h3>
+    <p>Перейдите в: «Сетевые правила» > «Интернет фильтры» > «Настройка DNS»</p>
+    <p>Добавьте серверы DNS-over-TLS:</p>
+    <ul>
+        <li>1.1.1.1 — <code>cloudflare-dns.com</code></li>
+        <li>1.0.0.1 — <code>cloudflare-dns.com</code></li>
+        <li>8.8.4.4 — <code>dns.google.com</code></li>
+        <li>8.8.8.8 — <code>dns.google.com</code></li>
+    </ul>
+    <p><a href="media/image1.png">Скриншот: Настройка DNS в интерфейсе роутера</a></p>
+
+    <h3>Вариант 2: Настройка через CLI</h3>
+    <pre>
+dns-proxy tls upstream 1.1.1.1 sni cloudflare-dns.com
 dns-proxy tls upstream 1.0.0.1 sni cloudflare-dns.com
 dns-proxy tls upstream 8.8.4.4 sni dns.google
 dns-proxy tls upstream 8.8.8.8 sni dns.google
-dns-proxy https upstream https://9.9.9.9/dns-query</pre>
-    
-    <img src="media/image2.png" alt="Настройка DNS через CLI">
-    <img src="media/image3.png" alt="Проверка DNS настроек">
+system configuration save
+    </pre>
+    <p><a href="media/image2.png">Скриншот: Настройка через CLI</a></p>
+    <p><a href="media/image3.png">Скриншот: Дополнительная настройка CLI</a></p>
+    <p>В настройках интернет-соединения включите «Игнорировать DNSv4 интернет-провайдера» (и DNSv6, если используется IPv6).</p>
+    <p><a href="media/image4.png">Скриншот: Настройка игнорирования DNS</a></p>
 
-    <h2>2. В настройках интернет соединения устанавливаем галочку «Игнорировать DNSv4 интернет-провайдера». Тоже самое, если используется IPv6.</h2>
-    <img src="media/image4.png" alt="Настройки интернет соединения">
+    <h2>2. Установка Entware</h2>
+    <h3>Подготовка флешки</h3>
+    <p>Отформатируйте USB накопитель в ext4. Используйте утилиты, такие как MiniTool Partition Wizard или Paragon Partition Manager, так как Windows не поддерживает ext4 стандартными средствами.</p>
+    <p><a href="https://help.keenetic.com">Ссылка на Keenetic Help</a></p>
+    <p><a href="media/image5.png">Скриншот: Форматирование флешки</a></p>
 
-    <h2>3. В общих настройках системы установите компоненты OPKG. Основным и обязательным является компонент "Поддержка открытых пакетов".</h2>
-    <img src="media/image5.png" alt="Установка компонентов OPKG">
+    <h3>Подготовка роутера</h3>
+    <p>В общих настройках системы установите компонент «Поддержка открытых пакетов» (OPKG).</p>
+    <p><a href="media/image6.png">Скриншот: Установка компонента OPKG</a></p>
 
-    <h2>4. Форматируем флешку в ext4. Винда не умеет стандартными утилитами, можно использовать MiniTool Partition Wizard, Paragon Partition Manager и т.д.</h2>
-    <img src="media/image6.png" alt="Форматирование флешки в ext4">
+    <h3>Вариант установки 1: Через CLI</h3>
+    <ol>
+        <li>Зайдите в командную строку роутера: <a href="http://192.168.1.1/a">http://192.168.1.1/a</a> или через «Шестеренку» > «Командная строка».</li>
+        <p><a href="media/image8.png">Скриншот: Доступ к CLI</a></p>
+        <li>Введите: <code>opkg disk</code>, нажмите Tab, выберите флешку.</li>
+        <p><a href="media/image9.png">Скриншот: Выбор флешки в CLI</a></p>
+        <li>Вставьте ссылку для вашей архитектуры:
+            <ul>
+                <li>mipsel: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz</a></li>
+                <li>aarch: <a href="https://bin.entware.net/aarch64-k3.10/installer/aarch64-installer.tar.gz">https://bin.entware.net/aarch64-k3.10/installer/aarch64-installer.tar.gz</a></li>
+                <li>mips: <a href="https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz">https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz</a></li>
+            </ul>
+        </li>
+        <p><a href="media/image10.png">Скриншот: Установка Entware через CLI</a></p>
+        <li>Нажмите «Отправить запрос».</li>
+        <li>Перейдите во вкладку «Диагностика», откройте журнал, дождитесь: <code>Opkg::Manager: /opt/etc/init.d/doinstall: [5/5] "Entware" installed!</code></li>
+    </ol>
 
-    <h2>5. Качаем(<a href="https://help.keenetic.com/hc/ru/articles/360021214160-%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D1%8B-%D0%BF%D0%B0%D0%BA%D0%B5%D1%82%D0%BE%D0%B2-%D1%80%D0%B5%D0%BF%D0%BE%D0%B7%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D1%8F-Entware-%D0%BD%D0%B0-USB-%D0%BD%D0%B0%D0%BA%D0%BE%D0%BF%D0%B8%D1%82%D0%B5%D0%BB%D1%8C" target="_blank">ссылка</a>) инсталлятор entware под свой роутер. На свой роутер использовал этот <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz" target="_blank">https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz</a>.</h2>
+    <h3>Вариант установки 2: Через интерфейс</h3>
+    <ol>
+        <li>Скачайте инсталлятор Entware для вашего роутера, например: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">mipsel-installer.tar.gz</a>.</li>
+        <li>Вставьте флешку в роутер, зайдите в «Приложения», выберите флешку.</li>
+        <p><a href="media/image11.png">Скриншот: Выбор флешки в приложениях</a></p>
+        <li>Создайте папку <code>install</code> в корне флешки, загрузите туда инсталлятор.</li>
+        <p><a href="media/image12.png">Скриншот: Создание папки install</a></p>
+        <p><a href="media/image13.png">Скриншот: Загрузка инсталлятора</a></p>
+        <li>Перейдите во вкладку OPKG, выберите накопитель, нажмите «Сохранить».</li>
+        <p><a href="media/image14.png">Скриншот: Настройка OPKG</a></p>
+        <li>Следите за установкой во вкладке «Диагностика». Ожидайте: <code>Opkg::Manager: /opt/etc/init.d/doinstall: [5/5] "Entware" installed!</code></li>
+        <p><a href="media/image15.png">Скриншот: Журнал установки</a></p>
+    </ol>
 
-    <h2>6. Вставляем флешку в роутер, заходим в приложения, кликаем на нашу флешку.</h2>
-    <img src="media/image7.png" alt="Интерфейс приложений роутера">
+    <h2>3. Установка Magitrickle</h2>
+    <p>Используйте SSH-клиент (PuTTY, Kitty, Termius). Подключитесь к роутеру:</p>
+    <ul>
+        <li>Адрес: IP роутера, порт: 222 (или 22, если «Сервер SSH» не установлен).</li>
+        <li>Логин: <code>root</code>, пароль: <code>keenetic</code> (смените пароль командой <code>passwd</code>).</li>
+    </ul>
+    <p><a href="media/image16.png">Скриншот: Подключение через SSH</a></p>
+    <p><a href="media/image17.png">Скриншот: Ввод логина и пароля</a></p>
 
-    <h2>7. Создаем в корне папку «install», загружаем туда ранее скачанный файл установки entware.</h2>
-    <img src="media/image8.png" alt="Создание папки install">
-    <img src="media/image9.png" alt="Загрузка файла установки">
+    <p>Поочередно введите команды:</p>
+    <pre>
+wget -qO- http://bin.magitrickle.dev/packages/add_repo.sh | sh
+opkg update && opkg install magitrickle
+/opt/etc/init.d/S99magitrickle start
+    </pre>
+    <p>Для обновления пакета:</p>
+    <pre>
+opkg update && opkg install magitrickle
+/opt/etc/init.d/S99magitrickle restart
+    </pre>
+    <p><a href="media/image18.png">Скриншот: Установка Magitrickle</a></p>
+    <p>Magitrickle запущен. Зайдите через браузер: <code>адрес_роутера:8080</code></p>
+    <p><a href="media/image19.png">Скриншот: Интерфейс Magitrickle</a></p>
 
-    <h2>8. Переходим во вкладку OPKG, в выпадающем списке выбираем свой накопитель, нажимаем «Сохранить».</h2>
-    <p>Началась установка.</p>
-    <img src="media/image10.png" alt="Установка Entware">
-    <p>Переходим во вкладку Диагностика, открываем журнал.</p>
-    <p>Смотрим за ходом установки, в конце установки появится запись:</p>
-    <p>«Opkg::Manager: /opt/etc/init.d/doinstall: [5/5] "Entware" installed!»</p>
-    <img src="media/image11.png" alt="Журнал установки">
+    <h2>4. Установка Sing-Box</h2>
+    <p>Установите Sing-Box:</p>
+    <pre>
+opkg install sing-box-go
+    </pre>
+    <p><a href="media/image20.png">Скриншот: Установка Sing-Box</a></p>
 
-    <h2>9. Далее потребуется SSH клиент (putty, kitty...)</h2>
-    <p>Вводим адрес своего роутера, порт 222, подключаемся.</p>
-    
-    <div class="warning">
-        <strong>Важно!</strong> 222-й порт используется, если в роутере установлен компонент "Сервер SSH". Если он не установлен, используйте 22-й порт для подключения к Entware.
-    </div>
-    
-    <p>Логин -- root, пароль -- keenetic. Сменить пароль сразу можете командой passwd.</p>
-    <img src="media/image12.png" alt="Подключение по SSH">
+    <h3>Создание конфига</h3>
+    <p>Используйте генераторы конфига:</p>
+    <ul>
+        <li><a href="https://kiarant.github.io/converter">Kiarant Converter</a></li>
+        <li><a href="https://qp-io.github.io/keenetic-vless-singbox-tun-config-gen">QP-IO Config Generator</a></li>
+    </ul>
+    <p><strong>Примечание:</strong> 100% работоспособность конфига не гарантируется из-за разных типов конфигураций.</p>
+    <p>Загрузите конфиг в <code>/opt/etc/sing-box/</code> (замените стандартный). Рекомендуется использовать WinSCP (адрес роутера, порт 222, логин <code>root</code>, пароль <code>keenetic</code>).</p>
+    <p><a href="media/image21.png">Скриншот: Загрузка конфига через WinSCP</a></p>
+    <p><a href="media/image22.png">Скриншот: Настройка WinSCP</a></p>
 
-    <h2>10. Далее нужно закинуть файл установки MagiTrickle <a href="https://github.com/MagiTrickle/MagiTrickle/releases" target="_blank">https://github.com/MagiTrickle/MagiTrickle/releases</a> на флешку с entware (для моего роутера magitrickle_0.1.8-1_mipsel-3.4.ipk).</h2>
-    <p>Сделать это можно из вебморды кинетика (Приложения), или с помощью дополнительного ПО или из консоли. Я использую WinSCP.</p>
-    <img src="media/image13.png" alt="Использование WinSCP">
-    <p>Кладу в папку '/opt/tmp/'</p>
-    <img src="media/image14.png" alt="Загрузка файла в /opt/tmp">
+    <h3>Ручной способ создания конфига (by Ponywka)</h3>
+    <ol>
+        <li>Скачайте Nekobox.</li>
+        <li>Вставьте свой конфиг в Nekobox.</li>
+        <li>ПКМ по конфигу → Экспортировать конфиг Singbox.</li>
+        <li>Вставьте конфиг на <a href="https://jsonviewer.stack.hu/">JSON Viewer</a>.</li>
+        <li>Нажмите «Format».</li>
+        <li>Найдите секцию <code>outbounds</code>, скопируйте первый Outbound (ваш сервер).</li>
+        <li>Откройте <code>/opt/etc/sing-box/config.json</code>.</li>
+        <li>Очистите файл.</li>
+        <li>Вставьте пример конфига:</li>
+    </ol>
+    <pre>
+{
+  "log": {
+    "level": "info"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "singtun0",
+      "address": [
+        "172.19.0.1/32"
+      ],
+      "stack": "gvisor"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "select",
+      "outbounds": [
+        "auto",
+        "proxy"
+      ],
+      "default": "auto",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "urltest",
+      "tag": "auto",
+      "outbounds": [
+        "proxy"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "tolerance": 50,
+      "idle_timeout": "30m",
+      "interrupt_exist_connections": false
+    },
+    // СЮДА ВСТАВЛЯЕШЬ СВОЙ OUTBOUND!!!
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "ip_version": 6,
+        "outbound": "block"
+      }
+    ],
+    "final": "select"
+  },
+  "experimental": {
+    "clash_api": {
+      "external_controller": "[::]:9090",
+      "external_ui": "dashboard"
+    }
+  }
+}
+    </pre>
+    <ol start="10">
+        <li>Сохраните файл.</li>
+        <li>Запустите: <code>/opt/etc/init.d/S99sing-box start</code></li>
+    </ol>
+    <p>Проверьте конфиг:</p>
+    <pre>
+sing-box -c /opt/etc/sing-box/config.json check
+    </pre>
+    <p><a href="media/image23.png">Скриншот: Проверка конфига Sing-Box</a></p>
+    <p>Запустите Sing-Box:</p>
+    <pre>
+/opt/etc/init.d/S99sing-box start
+    </pre>
+    <p><a href="media/image24.png">Скриншот: Запуск Sing-Box</a></p>
+    <p>Зайдите через браузер: <code>адрес_роутера:9090</code></p>
+    <p><a href="media/image25.png">Скриншот: Интерфейс Sing-Box</a></p>
+    <p>Во вкладке Proxies выберите подключение из конфига для интерфейса <code>tun0</code>.</p>
+    <p><a href="media/image26.png">Скриншот: Выбор подключения в Proxies</a></p>
 
-    <h2>11. Открываем консоль, переходим в папку, в которую положили файл, и запускаем установку.</h2>
-    <pre>cd /opt/tmp
-opkg install "название пакета"</pre>
-    <img src="media/image15.png" alt="Установка MagiTrickle">
-    <p>Пишем:</p>
-    <pre>/opt/etc/init.d/S99magitrickle start</pre>
-    <p>(переходим по пути /opt/etc/init.d и запускаем там файл S99magitrickle)</p>
-    <img src="media/image16.png" alt="Запуск MagiTrickle">
-    <p>MT запущен.</p>
-    <p>Зайти можно в браузере: адрес роутера:8080</p>
-    <img src="media/image17.png" alt="Интерфейс MagiTrickle">
+    <h2>5. Настройка маршрутизации</h2>
+    <p>Перейдите в интерфейс Magitrickle: <code>192.168.1.1:8080</code></p>
+    <ol>
+        <li>Нажмите «+», создайте группу.</li>
+        <li>Выберите интерфейс: <code>tun0</code> или <code>singtun0</code>.</li>
+        <p><a href="media/image27.png">Скриншот: Создание группы в Magitrickle</a></p>
+        <li>Для проверки укажите в Pattern, например, <code>2ip.ru</code>, сохраните.</li>
+        <p><a href="media/image28.png">Скриншот: Настройка Pattern</a></p>
+        <li>Откройте браузер в режиме инкогнито, зайдите на <a href="https://2ip.ru">2ip.ru</a>, проверьте.</li>
+        <p><a href="media/image29.png">Скриншот: Проверка на 2ip.ru</a></p>
+    </ol>
+    <p>Можно использовать любые интерфейсы и создавать группы с разными интерфейсами.</p>
+    <p>Список доменов для сервисов: <a href="https://iplist.opencck.org/ru">iplist.opencck.org</a> (формат «Text», тип «Домены», только wildcard).</p>
+    <p><a href="media/image30.png">Скриншот: Список доменов</a></p>
+    <p>Для массового импорта доменов используйте редакторы:</p>
+    <ul>
+        <li><a href="https://kiarant.github.io/editorMT">Kiarant EditorMT</a></li>
+        <li><a href="https://qp-io.github.io/magitrickle/magitricle-editor">QP-IO Magitrickle Editor</a></li>
+    </ul>
 
-    <h2>12. <span class="highlight">К исполнению, если есть конфиг Vless/Vmess/ShadowSocks/Trojan/Tuic/Outline!</span></h2>
-    <p><span class="highlight">Если нет, идем на пункт 12.</span></p>
-    <p>(бесплатные конфиги можете найти тут: <a href="https://github.com/Epodonios/v2ray-configs" target="_blank">https://github.com/Epodonios/v2ray-configs</a>)</p>
-    <p>Ставим Sing-Box командой <code>opkg install sing-box-go</code></p>
-    <img src="media/image18.png" alt="Установка Sing-Box">
-    <p>Качаем файл tun.sh отсюда <a href="https://kiarant.github.io/tun.sh" target="_blank">https://kiarant.github.io/tun.sh</a>.</p>
-    <p>Заходим на <a href="https://kiarant.github.io/converter" target="_blank">https://kiarant.github.io/converter</a>, вписываем адрес роутера и указываем ссылки vless и ss.</p>
-    <p>Конвертируем, сохраняем.</p>
-    <img src="media/image19.png" alt="Конвертация конфига">
-    <p>Закидываем конфиг по пути /opt/etc/sing-box/ (заменяем стандартный)</p>
-    <img src="media/image20.png" alt="Замена конфига Sing-Box">
-    <p>Если оставляете стандартный конфиг (в папке более одного файла):</p>
-    <p>Заходим по пути /opt/etc/init.d, редактируем файл S99sing-box.</p>
-    <p>Меняем строку с:</p>
-    <pre>ARGS=\"run -D /opt/var/lib/sing-box -C /opt/etc/sing-box/\"</pre>
-    <p>На:</p>
-    <pre>ARGS=\"run -D /opt/var/lib/sing-box -c /opt/etc/sing-box/ИМЯ_ВАШЕГО_КОНФИГА.json\"</pre>
-    <div class="warning">
-        <strong>ВАЖНО! Меняем на маленькую букву "c" (английский!).</strong>
-    </div>
-    <img src="media/image21.png" alt="Редактирование файла S99sing-box">
+    <h2>6. Типы правил маршрутизации</h2>
+    <p>В интерфейсе Magitrickle доступны следующие типы правил:</p>
+    <ul>
+        <li><strong>Namespace (Именное пространство):</strong> Охватывает домен и поддомены. Например, <code>example.com</code>.</li>
+        <p><a href="media/image31.png">Скриншот: Namespace</a></p>
+        <li><strong>Wildcard (Подстановочный шаблон):</strong> Использует <code>*</code> и <code>?</code>. Например, <code>*example.com</code>.</li>
+        <p><a href="media/image32.png">Скриншот: Wildcard</a></p>
+        <li><strong>Domain (Точный домен):</strong> Только указанный домен, без поддоменов. Например, <code>sub.example.com</code>.</li>
+        <p><a href="media/image33.png">Скриншот: Domain</a></p>
+        <li><strong>RegExp (Регулярное выражение):</strong> Для опытных пользователей, использует парсер <code>dlclark/regexp2</code>. Например, <code>^[a-z]*example\.com$</code>.</li>
+        <p><a href="media/image34.png">Скриншот: RegExp</a></p>
+    </ul>
 
-    <h2>13. В WinSCP заходим в папку /opt/etc/ndm/netfilter.d/ и кладем туда файл tun.sh.</h2>
-    <img src="media/image22.png" alt="Копирование tun.sh">
-    <p>Открываем правой кнопкой свойства файла, в поле Oct прописываем значение 0755.</p>
-    <p>Галочки должны проставиться как на скриншоте.</p>
-    <img src="media/image23.png" alt="Настройка прав файла">
-    <p>Или в консоли прописываем команду:</p>
-    <pre>chmod +x /opt/etc/ndm/netfilter.d/tun.sh</pre>
-    <p>или</p>
-    <pre>chmod 0755 /opt/etc/ndm/netfilter.d/tun.sh</pre>
-    <p>т.е. делаем его исполняемым.</p>
-    <img src="media/image24.png" alt="Установка прав через консоль">
-    <p>Проверяем конфиг sing-box командой:</p>
-    <pre>sing-box -c /opt/etc/sing-box/config.json check</pre>
-    <img src="media/image25.png" alt="Проверка конфига">
-    <p>Запускаем:</p>
-    <pre>sing-box -c /opt/etc/sing-box/config.json run</pre>
-    <img src="media/image26.png" alt="Запуск Sing-Box">
-    <p>Если во время запуска возникла ошибка:</p>
-    <pre>ERROR [0000] clash-api: download external ui error: Get "https://github.com/MetaCubeX/clash-api/download": EOF</pre>
-    <p>качаем UI вручную командой:</p>
-    <pre>opkg update && opkg install curl && curl -L https://github.com/MetaCubeX/acl4ssr/archive/gh-pages.zip -o /tmp/ui.zip && unzip /tmp/ui.zip -d /opt/var/lib/sing-box/ && mv /opt/var/lib/sing-box/acl4ssr-gh-pages /opt/var/lib/sing-box/ui && rm /tmp/ui.zip</pre>
-    <p>Зайти можно в браузере: адрес роутера:9090</p>
-    <img src="media/image27.png" alt="Интерфейс Sing-Box">
-    <p>При возникновении такого окна вводим: <code>http://адрес</code> роутера:9090 и нажимаем add.</p>
-    <img src="media/image28.png" alt="Добавление адреса Sing-Box">
-    <p>Выбираем появившеюся внизу запись, открывается веб интерфейс sing-box.</p>
-    <img src="media/image29.png" alt="Веб интерфейс Sing-Box">
-    <p>Во вкладке Proxies можем увидеть подключения из конфига и выбрать то, которое будет использоваться для работы интерфейса tun0.</p>
-    <img src="media/image30.png" alt="Настройка прокси">
-    <p>Перезагружаем роутер, заходим еще раз по адресу sing-box дабы убедиться, что он работает.</p>
-    <p>Проверьте, применились ли разрешающие правила для tun0:</p>
-    <pre>iptables-save | grep tun+</pre>
-    <img src="media/image31.png" alt="Проверка правил iptables">
+    <h2>7. Поддержка автора</h2>
+    <p>Поддержать автора можно по <a href="#">ссылке</a>.</p>
 
-    <h2>14. Генерируем конфиг WARP по инструкции <a href="https://github.com/ImMALWARE/bash-warp-generator" target="_blank">https://github.com/ImMALWARE/bash-warp-generator</a></h2>
-    <p>Если в компонентах не установлен Wireguard VPN, устанавливаем.</p>
-    <img src="media/image32.png" alt="Установка Wireguard">
-    <p>Конфиг добавляем в «Другие подключения», ставим галочку «Использовать для выхода в интернет».</p>
-    <img src="media/image33.png" alt="Настройка WARP">
-    <p>Выполняем действия по инструкции с шага 20 по шаг 36 <a href="https://docs.amnezia.org/ru/documentation/instructions/keenetic-os-awg/" target="_blank">https://docs.amnezia.org/ru/documentation/instructions/keenetic-os-awg/</a>.</p>
-    <p>Запоминаем имя интерфейса с шага 22.</p>
-
-    <h2>15. Открываем веб интерфейс MagiTrickle (адрес роутера:8080)</h2>
-    <p>Нажимаем на + справа, создаем группу.</p>
-    <p>В выпадающем списке выбираем нужный нам интерфейс.</p>
-    <p>WARP -- nwg0 (номер из имени интерфейса который запоминали ранее).</p>
-    <p>Sing-Box -- tun0.</p>
-    <img src="media/image34.png" alt="Создание группы в MagiTrickle">
-    <p>(у меня два подключения WG, поэтому два интерфейса nwg)</p>
-    <p>Нажимаем на + в правиле, разворачиваем список на стрелочки справа.</p>
-    <img src="media/image35.png" alt="Добавление правила">
-    <p>Для проверки указываем в Pattern, например, 2ip.ru, нажимаем на кнопку сохранить вверху.</p>
-    <img src="media/image36.png" alt="Создание правила для 2ip.ru">
-    <p>Заходим на 2ip.ru, проверяем</p>
-    <img src="media/image37.png" alt="Проверка на 2ip.ru">
-    <p>Можем изменить интерфейс на tun0, перезагрузить страницу через Ctrl+F5/зайти через режим инкогнито.</p>
-    <img src="media/image38.png" alt="Изменение интерфейса">
-    <img src="media/image39.png" alt="Проверка с другим интерфейсом">
-    <p>Указываем в Pattern vkvideo.ru и теперь мы можем смотреть его с других стран.</p>
-    <img src="media/image40.png" alt="Правило для vkvideo.ru">
-    <p>Можете создавать разные группы с разными интерфейсами. Дальше ваша фантазия.</p>
-    <p>Описание типов правил:</p>
-    <img src="media/image41.png" alt="Типы правил MagiTrickle">
-    <div class="footer-links">
-    <a href="https://yoomoney.ru/to/4100118816814288" target="_blank">
-        <button class="donate-btn">Донат</button>
-    </a>
-    </div>
 </body>
 </html>
