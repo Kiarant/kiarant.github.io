@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -48,27 +9,27 @@
     <style>
         :root {
             --primary-color: #1aa6d1;
-			--primary-hover: #2239e9;
-			--bg-color: #f4f7fa;
-			--text-color: #333;
-			--container-bg: #fff;
-			--highlight-bg: #e8f5e9;
-			--highlight-border: #0affe8;
-			--code-bg: #2d2d2d;
-			--code-text: #f8f8f2;
-			--shadow: rgba(0, 0, 0, 0.1);
+            --primary-hover: #2239e9;
+            --bg-color: #f4f7fa;
+            --text-color: #333;
+            --container-bg: #fff;
+            --highlight-bg: #e8f5e9;
+            --highlight-border: #0affe8;
+            --code-bg: #2d2d2d;
+            --code-text: #f8f8f2;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
         body.dark {
             --primary-color: #d1992e;
-			--primary-hover: #f18513;
-			--bg-color: #1e1e1e;
-			--text-color: #ddd;
-			--container-bg: #2d2d2d;
-			--highlight-bg: #3a3a3a;
-			--highlight-border: #ddb72e;
-			--code-bg: #1e1e1e;
-			--code-text: #f8f8f2;
-			--shadow: rgba(0, 0, 0, 0.3);
+            --primary-hover: #f18513;
+            --bg-color: #1e1e1e;
+            --text-color: #ddd;
+            --container-bg: #2d2d2d;
+            --highlight-bg: #3a3a3a;
+            --highlight-border: #ddb72e;
+            --code-bg: #1e1e1e;
+            --code-text: #f8f8f2;
+            --shadow: rgba(0, 0, 0, 0.3);
         }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -87,6 +48,7 @@
         h1 {
             text-align: center;
             margin-bottom: 20px;
+            margin-top: 40px;
             font-size: 2.5em;
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 10px;
@@ -150,6 +112,7 @@
             box-shadow: 0 4px 12px var(--shadow);
             margin-bottom: 20px;
             transition: background-color 0.3s;
+            position: relative;
         }
         .section {
             margin-bottom: 30px;
@@ -177,10 +140,10 @@
             text-decoration: none;
         }
         .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
+            position: absolute;
+            top: 10px; /* Уменьшено для компактности */
+            right: 10px; /* Позиция в правом углу */
+            padding: 8px 12px; /* Компактные размеры */
             background-color: var(--primary-color);
             color: #fff;
             border: none;
@@ -191,11 +154,110 @@
         .theme-toggle:hover {
             background-color: var(--primary-hover);
         }
+        .donate-top {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .donate-top:hover {
+            background-color: var(--primary-hover);
+            text-decoration: none;
+        }
+        /* Стили для копирования */
+        .code-container {
+            position: relative;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--container-bg);
+            border: 1px solid var(--shadow);
+            border-radius: 4px;
+            padding: 5px;
+            cursor: pointer;
+            display: none;
+            transition: background-color 0.3s;
+        }
+        .copy-btn:hover {
+            background-color: var(--highlight-bg);
+        }
+        .code-container:hover .copy-btn {
+            display: block;
+        }
+        .copy-icon {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+        /* Медиа-запрос для мобильных устройств */
+        @media (max-width: 576px) {
+            .theme-toggle {
+                padding: 6px 10px; /* Еще меньше для мобильных */
+                font-size: 0.85em; /* Меньший текст */
+            }
+            .donate-top {
+                padding: 6px 10px;
+                font-size: 0.85em;
+            }
+        }
     </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">Переключить тему</button>
+    <script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
     <div class="container">
+        <a href="https://yoomoney.ru/to/4100118816814288" class="donate-top" target="_blank">Донат</a>
+        <button class="theme-toggle" onclick="toggleTheme()">Переключить тему</button>
         <h1>Magitrickle + SingBox Руководство</h1>
         <p class="highlight" style="text-align: center;">
             <a href="https://magitrickle.dev">MagiTrickle</a> | <a href="https://sing-box.sagernet.org/">SingBox</a>
@@ -306,8 +368,7 @@ opkg update && opkg install magitrickle
             <pre>
 opkg update && opkg install magitrickle
 /opt/etc/init.d/S99magitrickle restart</pre>
-            <img src="media/image18.png" alt="Установка Magitrickle">
-            <p>Magitrickle запущен. Проверить можнжо через браузер: <code>адрес_роутера:8080</code></p>
+            <p>Magitrickle запущен. Проверить можно через браузер: <code>адрес_роутера:8080</code></p>
             <img src="media/image19.png" alt="Интерфейс Magitrickle">
         </div>
 
@@ -340,9 +401,9 @@ opkg install sing-box-go</pre>
                 <li>Копишуешь первый <code>outbounds</code> который является твоим сервером</li>
                 <li>Открываешь /opt/etc/sing-box/config.json</li>
                 <li>Стираешь всё там на*уй</li>
-				<li>Заполняешь файл примером ниже </li>
-				<li>Сохраняешь</li>
-				<li><code>/opt/etc/init.d/S99sing-box start</code></li>
+                <li>Заполняешь файл примером ниже </li>
+                <li>Сохраняешь</li>
+                <li><code>/opt/etc/init.d/S99sing-box start</code></li>
             </ol>
             <pre>
 {
@@ -457,7 +518,7 @@ opkg install sing-box-go</pre>
 
         <div class="section">
             <h2>Поддержка автора</h2>
-			<p> Поддержать автора можно по <a href="https://yoomoney.ru/to/4100118816814288" target="_blank">ссылке</a>
+            <p> Поддержать автора можно по <a href="https://yoomoney.ru/to/4100118816814288" target="_blank">ссылке</a>
             <p style="text-align: center;"><a href="https://yoomoney.ru/to/4100118816814288" target="_blank" class="donate-button">Донат</a></p>
         </div>
     </div>
@@ -472,6 +533,48 @@ opkg install sing-box-go</pre>
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark');
         }
+
+        // Добавлено для копирования
+        function wrapPreWithCopyButton() {
+            const pres = document.querySelectorAll('pre');
+            pres.forEach(pre => {
+                // Проверяем, не обернут ли уже элемент
+                if (!pre.parentElement.classList.contains('code-container')) {
+                    const container = document.createElement('div');
+                    container.className = 'code-container';
+                    pre.parentElement.insertBefore(container, pre);
+                    container.appendChild(pre);
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'copy-btn';
+                    copyBtn.innerHTML = `
+                        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    `;
+                    copyBtn.onclick = () => copyCode(copyBtn);
+                    container.appendChild(copyBtn);
+                }
+            });
+        }
+
+        function copyCode(button) {
+            const pre = button.previousElementSibling;
+            const text = pre.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalContent = button.innerHTML;
+                button.innerHTML = 'Скопировано!';
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+            });
+        }
+
+        // Вызываем функцию при загрузке страницы
+        document.addEventListener('DOMContentLoaded', wrapPreWithCopyButton);
+        // Конец добавленного кода
     </script>
 </body>
 </html>
