@@ -94,6 +94,7 @@
         h2 {
             font-size: 1.8em;
             margin-top: 30px;
+            text-align: center;
         }
         h3 {
             font-size: 1.4em;
@@ -226,13 +227,13 @@
             <img src="media/image1.png" alt="Настройка DNS серверов">
 
             <h3>Вариант 2: Настройка через CLI</h3>
-            <pre>
-dns-proxy tls upstream 1.1.1.1 sni cloudflare-dns.com
+            <p>Перейдите по ссылке 192.168.1.1/a, или через «Шестеренку» > «Командная строка».</p>
+            <p>Поочередно введите команды и нажмите "Отправить"</p>
+            <pre>dns-proxy tls upstream 1.1.1.1 sni cloudflare-dns.com
 dns-proxy tls upstream 1.0.0.1 sni cloudflare-dns.com
 dns-proxy tls upstream 8.8.4.4 sni dns.google
 dns-proxy tls upstream 8.8.8.8 sni dns.google
-system configuration save
-            </pre>
+system configuration save</pre>
             <img src="media/image2.png" alt="Настройка DNS через CLI">
             <img src="media/image3.png" alt="Дополнительная настройка CLI">
             <p>В настройках интернет-соединения включите «Игнорировать DNSv4 интернет-провайдера» (и DNSv6, если используется IPv6).</p>
@@ -247,21 +248,24 @@ system configuration save
             <img src="media/image5.png" alt="Форматирование флешки">
 
             <h3>Подготовка роутера</h3>
-            <p>В общих настройках системы установите компонент «Поддержка открытых пакетов» (OPKG).</p>
+            <p>В общих настройках системы "Изменить набор компонентов", установите компонент «Поддержка открытых пакетов» (OPKG).</p>
             <img src="media/image6.png" alt="Установка компонента OPKG">
 
             <h3>Вариант установки 1: Через CLI</h3>
             <ol>
                 <li>Зайдите в командную строку роутера: <a href="http://192.168.1.1/a">http://192.168.1.1/a</a> или через «Шестеренку» > «Командная строка».</li>
                 <img src="media/image8.png" alt="Доступ к командной строке">
-                <li>Введите: <code>opkg disk</code>, нажмите Tab, выберите флешку.</li>
+                <li>Введите: <code>opkg disk</code>, нажмите Tab, выберите имя флешки (как вы назвали ее при форматировании).</li>
                 <img src="media/image9.png" alt="Выбор флешки в CLI">
                 <li>Вставьте ссылку для вашей архитектуры:
                     <ul>
                         <li>mipsel: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz</a></li>
-                        <li>aarch: <a href="https://bin.entware.net/aarch64-k3.10/installer/aarch64-installer.tar.gz">https://bin.entware.net/aarch64-k3.10/installer/aarch64-installer.tar.gz</a></li>
                         <li>mips: <a href="https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz">https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz</a></li>
+                        <li>aarch: <a href="https://bin.entware.net/aarch64-k3.10/installer/aarch64-installer.tar.gz">https://bin.entware.net/aarch64-k3.10/installer/aarch64-installer.tar.gz</a></li>
                     </ul>
+                    <p><b>Справка:</b> Для моделей 4G (KN-1212), Omni (KN-1410), Extra (KN-1710/1711/1713), Giga (KN-1010/1011), Ultra (KN-1810), Viva (KN-1910/1912/1913), Giant (KN-2610), Hero 4G (KN-2310/2311), Hopper (KN-3810) и Zyxel Keenetic II / III, Extra, Extra II, Giga II / III, Omni, Omni II, Viva, Ultra, Ultra II используйте для установки архив <b>mipsel</b></p>
+                    <p>Для моделей Ultra SE (KN-2510), Giga SE (KN-2410), DSL (KN-2010), Skipper DSL (KN-2112), Duo (KN-2110), Ultra SE (KN-2510),  Hopper DSL (KN-3610) и Zyxel Keenetic DSL, LTE, VOX используйте для установки архив <b>mips</b></p>
+                    <p>Для моделей Peak (KN-2710), Ultra (KN-1811), Giga (KN-1012), Hopper (KN-3811) и Hopper SE (KN-3812) используйте архив <b>aarch64</b></p>
                 </li>
                 <img src="media/image10.png" alt="Установка Entware через CLI">
                 <li>Нажмите «Отправить запрос».</li>
@@ -270,7 +274,7 @@ system configuration save
 
             <h3>Вариант установки 2: Через интерфейс</h3>
             <ol>
-                <li>Скачайте инсталлятор Entware для вашего роутера, например: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">mipsel-installer.tar.gz</a>.</li>
+                <li>Скачайте инсталлятор Entware для вашего роутера (ссылки в варианте 1), например: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">mipsel-installer.tar.gz</a>.</li>
                 <li>Вставьте флешку в роутер, зайдите в «Приложения», выберите флешку.</li>
                 <img src="media/image11.png" alt="Выбор флешки в приложениях">
                 <li>Создайте папку <code>install</code> в корне флешки, загрузите туда инсталлятор.</li>
@@ -297,15 +301,13 @@ system configuration save
             <pre>
 wget -qO- http://bin.magitrickle.dev/packages/add_repo.sh | sh
 opkg update && opkg install magitrickle
-/opt/etc/init.d/S99magitrickle start
-            </pre>
-            <p>Для обновления пакета:</p>
+/opt/etc/init.d/S99magitrickle start</pre>
+            <p>Для обновления пакета в дальнейшем можно использовать команду:</p>
             <pre>
 opkg update && opkg install magitrickle
-/opt/etc/init.d/S99magitrickle restart
-            </pre>
+/opt/etc/init.d/S99magitrickle restart</pre>
             <img src="media/image18.png" alt="Установка Magitrickle">
-            <p>Magitrickle запущен. Зайдите через браузер: <code>адрес_роутера:8080</code></p>
+            <p>Magitrickle запущен. Проверить можнжо через браузер: <code>адрес_роутера:8080</code></p>
             <img src="media/image19.png" alt="Интерфейс Magitrickle">
         </div>
 
@@ -313,18 +315,17 @@ opkg update && opkg install magitrickle
             <h2>Установка Sing-Box</h2>
             <p>Установите Sing-Box:</p>
             <pre>
-opkg install sing-box-go
-            </pre>
+opkg install sing-box-go</pre>
             <img src="media/image20.png" alt="Установка Sing-Box">
 
             <h3>Создание конфига</h3>
-            <p>Используйте генераторы конфига:</p>
+            <p>Создать конфиг можно вручную, или использовать генераторы конфига:</p>
             <ul>
                 <li><a href="https://kiarant.github.io/converter">Kiarant Converter</a></li>
                 <li><a href="https://qp-io.github.io/keenetic-vless-singbox-tun-config-gen">QP-IO Config Generator</a></li>
             </ul>
-            <p class="highlight"><strong>Примечание:</strong> 100% работоспособность конфига не гарантируется из-за разных типов конфигураций.</p>
-            <p>Загрузите конфиг в <code>/opt/etc/sing-box/</code> (замените стандартный). Рекомендуется использовать WinSCP (адрес роутера, порт 222, логин <code>root</code>, пароль <code>keenetic</code>).</p>
+            <p class="highlight"><strong>Примечание:</strong> 100% работоспособность конфига не гарантируется ввиду отсутствия возможности проверить все конфигурации.</p>
+            <p>Загрузите конфиг в <code>/opt/etc/sing-box/</code> (замените стандартный). Я использовал WinSCP. Новое подлючение: адрес роутера, порт 222, логин <code>root</code>, пароль от entware (если не изменили: <code>keenetic</code>).</p>
             <img src="media/image21.png" alt="Загрузка конфига через WinSCP">
             <img src="media/image22.png" alt="Настройка WinSCP">
 
@@ -338,7 +339,7 @@ opkg install sing-box-go
                 <li>Спускаешься до <code>outbounds</code></li>
                 <li>Копишуешь первый <code>outbounds</code> который является твоим сервером</li>
                 <li>Открываешь /opt/etc/sing-box/config.json</li>
-                <li>Стираешь всё там нахуй</li>
+                <li>Стираешь всё там на*уй</li>
 				<li>Заполняешь файл примером ниже </li>
 				<li>Сохраняешь</li>
 				<li><code>/opt/etc/init.d/S99sing-box start</code></li>
@@ -404,10 +405,6 @@ opkg install sing-box-go
     }
   }
 }</pre>
-            <ol start="10">
-                <li>Сохраните файл.</li>
-                <li>Запустите: <code>/opt/etc/init.d/S99sing-box start</code></li>
-            </ol>
             <p>Проверьте конфиг:</p>
             <pre>sing-box check</pre>
             <img src="media/image23.png" alt="Проверка конфига Sing-Box">
@@ -416,7 +413,7 @@ opkg install sing-box-go
             <img src="media/image24.png" alt="Запуск Sing-Box">
             <p>Зайдите через браузер: <code>адрес_роутера:9090</code></p>
             <img src="media/image25.png" alt="Интерфейс Sing-Box">
-            <p>Во вкладке Proxies можем увидеть подключения из конфига и выбрать то, которое будет использоваться для работы интерфейса <code>tun0</code>.</p>
+            <p>Во вкладке Proxies можем увидеть подключения из конфига и выбрать то, которое будет использоваться для работы интерфейса <code>tun0</code> (если в конфиге использовался selector).</p>
             <img src="media/image26.png" alt="Выбор подключения в Proxies">
         </div>
 
@@ -435,11 +432,12 @@ opkg install sing-box-go
             <p>Можете создавать разные группы с разными интерфейсами. Дальше ваша фантазия.</p>
             <p>Список доменов для разных сервисов можете найти по ссылке  <a href="https://iplist.opencck.org/ru">iplist.opencck.org</a> (формат «Text», тип «Домены», только wildcard).</p>
             <img src="media/image30.png" alt="Список доменов">
-            <p>Пока в релиз не выпустили массовый импорт доменов, можно воспользоваться сторонними редакторами/генераторами конфига:</p>
-            <ul>
-                <li><a href="https://kiarant.github.io/editorMT">Kiarant EditorMT</a></li>
-                <li><a href="https://qp-io.github.io/magitrickle/magitricle-editor">QP-IO Magitrickle Editor</a></li>
-            </ul>
+            <p>Для импорта больших списков можете использовать кнопку "Импортировать список"</p>
+            <img src="media/image_mass_import.png" alt="Импорт списков">
+            <img src="media/image_mass_import2.png" alt="Вставка списков">
+            <img src="media/image_mass_import3.png" alt="Результат импорта списков">
+            <p>Нажимаем "Сохранить изменения"</p>
+            <img src="media/image_MT_save.png" alt="Сохранение изменений">
         </div>
 
         <div class="section">
