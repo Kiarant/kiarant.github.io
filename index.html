@@ -327,8 +327,6 @@ dns-proxy tls upstream 8.8.8.8 sni dns.google
 system configuration save</pre>
             <img src="media/image2.png" alt="Настройка DNS через CLI">
             <img src="media/image3.png" alt="Дополнительная настройка CLI">
-            <p>В настройках интернет-соединения включите «Игнорировать DNSv4 интернет-провайдера» (и DNSv6, если используется IPv6).</p>
-            <img src="media/image4.png" alt="Игнорирование DNS провайдера">
         </div>
 
         <div class="section">
@@ -348,7 +346,7 @@ system configuration save</pre>
                 <img src="media/image8.png" alt="Доступ к командной строке">
                 <li>Введите: <code>opkg disk</code>, нажмите Tab, выберите имя флешки (как вы назвали ее при форматировании).</li>
                 <img src="media/image9.png" alt="Выбор флешки в CLI">
-                <li>Вставьте ссылку для вашей архитектуры:
+                <li>Через пробел вставьте ссылку для вашей архитектуры:
                     <ul>
                         <li>mipsel: <a href="https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz">https://bin.entware.net/mipselsf-k3.4/installer/mipsel-installer.tar.gz</a></li>
                         <li>mips: <a href="https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz">https://bin.entware.net/mipssf-k3.4/installer/mips-installer.tar.gz</a></li>
@@ -413,90 +411,12 @@ opkg install sing-box-go</pre>
             <h3>Создание конфига</h3>
             <p>Создать конфиг можно вручную, или использовать генераторы конфига:</p>
             <ul>
-                <li><a href="https://kiarant.github.io/converter">Kiarant Converter</a></li>
+                <li><a href="https://spatiumstas.github.io/web4core/">web4core by spatiumstas</a></li>
                 <li><a href="https://qp-io.github.io/keenetic-vless-singbox-tun-config-gen">QP-IO Config Generator</a></li>
             </ul>
-            <p class="highlight"><strong>Примечание:</strong> 100% работоспособность конфига не гарантируется ввиду отсутствия возможности проверить все конфигурации.</p>
             <p>Загрузите конфиг в <code>/opt/etc/sing-box/</code> (замените стандартный). Я использовал WinSCP. Новое подлючение: адрес роутера, порт 222, логин <code>root</code>, пароль от entware (если не изменили: <code>keenetic</code>).</p>
             <img src="media/image21.png" alt="Загрузка конфига через WinSCP">
             <img src="media/image22.png" alt="Настройка WinSCP">
-
-            <h3>Ручной способ создания конфига (by Ponywka)</h3>
-            <ol>
-                <li>Качаешь Nekobox</li>
-                <li>Вставляешь свой конфиг в Nekobox</li>
-                <li>ПКМ по конфигу -> Экспортировать конфиг Singbox</li>
-                <li>Вставляешь конфиг на сайт <a href="https://jsonviewer.stack.hu/">https://jsonviewer.stack.hu/</a>.</li>
-                <li>Сверху нажимаешь "Format"</li>
-                <li>Спускаешься до <code>outbounds</code></li>
-                <li>Копишуешь первый <code>outbounds</code> который является твоим сервером</li>
-                <li>Открываешь /opt/etc/sing-box/config.json</li>
-                <li>Стираешь всё там на*уй</li>
-                <li>Заполняешь файл примером ниже </li>
-                <li>Сохраняешь</li>
-                <li><code>/opt/etc/init.d/S99sing-box start</code></li>
-            </ol>
-            <pre>
-{
-  "log": {
-    "level": "info"
-  },
-  "inbounds": [
-    {
-      "type": "tun",
-      "tag": "tun-in",
-      "interface_name": "singtun0",
-      "address": [
-        "172.19.0.1/32"
-      ],
-      "stack": "gvisor"
-    }
-  ],
-  "outbounds": [
-    {
-      "type": "selector",
-      "tag": "select",
-      "outbounds": [
-        "auto",
-        "proxy"
-      ],
-      "default": "auto",
-      "interrupt_exist_connections": false
-    },
-    {
-      "type": "urltest",
-      "tag": "auto",
-      "outbounds": [
-        "proxy"
-      ],
-      "url": "https://www.gstatic.com/generate_204",
-      "interval": "3m",
-      "tolerance": 50,
-      "idle_timeout": "30m",
-      "interrupt_exist_connections": false
-    },
-    // СЮДА ВСТАВЛЯЕШЬ СВОЙ OUTBOUND!!!
-    {
-      "type": "block",
-      "tag": "block"
-    }
-  ],
-  "route": {
-    "rules": [
-      {
-        "ip_version": 6,
-        "outbound": "block"
-      }
-    ],
-    "final": "select"
-  },
-  "experimental": {
-    "clash_api": {
-      "external_controller": "[::]:9090",
-      "external_ui": "dashboard"
-    }
-  }
-}</pre>
             <p>Проверьте конфиг:</p>
             <pre>sing-box check</pre>
             <img src="media/image23.png" alt="Проверка конфига Sing-Box">
